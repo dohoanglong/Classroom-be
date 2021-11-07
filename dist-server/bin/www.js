@@ -17,22 +17,20 @@ var debug = (0, _debug["default"])('your-project-name:server');
 /**
  * Get port from environment and store in Express.
  */
+// var port = normalizePort(process.env.PORT || '3000');
+// app.set('port', port);
 
-var port = normalizePort(process.env.PORT || '3000');
-
-_app["default"].set('port', port);
 /**
  * Create HTTP server.
  */
-
 
 var server = _http["default"].createServer(_app["default"]);
 /**
  * Listen on provided port, on all network interfaces.
  */
+// server.listen(port);
 
 
-server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 /**
