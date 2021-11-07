@@ -2,23 +2,22 @@ import Customers from '../controllers/customer.controller.js';
 import express from 'express';
 var router = express.Router();
 // Create a new Customer
-const customers =new Customers();
 
-router.post("/", customers.create);
+router.post("/", Customers.create);
 
 // Retrieve all Customers
-router.get("/", customers.findAll);
+router.get("/", Customers.findAll);
 
 // Retrieve a single Customer with customerId
-router.get("/:customerId", customers.findOne);
+router.get("/:customerId", Customers.findOne);
 
 // Update a Customer with customerId
-router.put("/:customerId", customers.update);
+router.put("/:customerId", Customers.update);
 
 // Delete a Customer with customerId
-router.delete("/:customerId", customers.delete);
+router.delete("/:customerId", Customers.delete);
 
 // Create a new Customer
-router.delete("/", customers.deleteAll);
+router.delete("/", Customers.deleteAll);
 
 export default router;

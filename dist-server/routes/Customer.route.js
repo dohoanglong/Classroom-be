@@ -14,17 +14,16 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "d
 var router = _express["default"].Router(); // Create a new Customer
 
 
-var customers = new _customerController["default"]();
-router.post("/", customers.create); // Retrieve all Customers
+router.post("/", _customerController["default"].create); // Retrieve all Customers
 
-router.get("/", customers.findAll); // Retrieve a single Customer with customerId
+router.get("/", _customerController["default"].findAll); // Retrieve a single Customer with customerId
 
-router.get("/:customerId", customers.findOne); // Update a Customer with customerId
+router.get("/:customerId", _customerController["default"].findOne); // Update a Customer with customerId
 
-router.put("/:customerId", customers.update); // Delete a Customer with customerId
+router.put("/:customerId", _customerController["default"].update); // Delete a Customer with customerId
 
-router["delete"]("/:customerId", customers["delete"]); // Create a new Customer
+router["delete"]("/:customerId", _customerController["default"]["delete"]); // Create a new Customer
 
-router["delete"]("/", customers.deleteAll);
+router["delete"]("/", _customerController["default"].deleteAll);
 var _default = router;
 exports["default"] = _default;

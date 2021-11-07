@@ -1,8 +1,8 @@
-import Customer from '../models/Customer'
+import Customer from '../models/customer.model'
 
 // Create and Save a new Customer
 class customer {
-    create = (req, res) => {
+    static create = (req, res) => {
         // Validate request
         if (!req.body) {
           res.status(400).send({
@@ -29,7 +29,7 @@ class customer {
       };
       
       // Retrieve all Customers from the database.
-      findAll = (req, res) => {
+      static findAll = (req, res) => {
         Customer.getAll((err, data) => {
           if (err)
             res.status(500).send({
@@ -41,7 +41,7 @@ class customer {
       };
       
       // Find a single Customer with a customerId
-      findOne = (req, res) => {
+      static findOne = (req, res) => {
         Customer.findById(req.params.customerId, (err, data) => {
           if (err) {
             if (err.kind === "not_found") {
@@ -58,7 +58,7 @@ class customer {
       };
       
       // Update a Customer identified by the customerId in the request
-      update = (req, res) => {
+      static update = (req, res) => {
         // Validate Request
         if (!req.body) {
           res.status(400).send({
@@ -88,7 +88,7 @@ class customer {
       };
       
       // Delete a Customer with the specified customerId in the request
-      delete = (req, res) => {
+      static delete = (req, res) => {
         Customer.remove(req.params.customerId, (err, data) => {
           if (err) {
             if (err.kind === "not_found") {
@@ -105,7 +105,7 @@ class customer {
       };
       
       // Delete all Customers from the database.
-      deleteAll = (req, res) => {
+      static deleteAll = (req, res) => {
         Customer.removeAll((err, data) => {
           if (err)
             res.status(500).send({
