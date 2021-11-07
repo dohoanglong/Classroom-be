@@ -13,6 +13,8 @@ var _cookieParser = _interopRequireDefault(require("cookie-parser"));
 
 var _morgan = _interopRequireDefault(require("morgan"));
 
+var _dotenv = _interopRequireDefault(require("dotenv"));
+
 var _index = _interopRequireDefault(require("./routes/index"));
 
 var _customer = _interopRequireDefault(require("./routes/customer.route"));
@@ -20,6 +22,8 @@ var _customer = _interopRequireDefault(require("./routes/customer.route"));
 var _course = _interopRequireDefault(require("./routes/course.route"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+_dotenv["default"].config();
 
 var app = (0, _express["default"])();
 app.use((0, _morgan["default"])('dev'));
