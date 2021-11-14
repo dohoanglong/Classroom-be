@@ -4,7 +4,6 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import dotenv from 'dotenv'
 import indexRouter from './routes/index';
-import customerRoute from './routes/customer.route';
 import courseRoute from './routes/course.route'
 
 dotenv.config();
@@ -14,7 +13,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../public')));
-app.use('/customers',customerRoute);
 app.use('/courses',courseRoute);
 app.use('/', indexRouter);
 

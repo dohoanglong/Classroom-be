@@ -2,7 +2,7 @@ import Course from '../models/course.model'
 
 // Create and Save a new Course
 class course {
-    static create = (req, res) => {
+    static create = async (req, res) => {
         // Validate request
         if (!req.body) {
             res.status(400).send({
@@ -11,35 +11,28 @@ class course {
         }
 
         // Create a Course
-        const course = new Course({
-            id: req.body.id,
+        const course = {
             name: req.body.name,
             subject: req.body.subject,
             image: req.body.image,
-            description: req.body.description
-        });
+            description: req.body.description,
+            createdAt: Date(),
+            updatedAt: Date()
+        };
 
         // Save Course in the database
-        Course.create(course, (err, data) => {
-            if (err)
-                res.status(500).send({
-                    message:
-                        err.message || "Some error occurred while creating the course."
-                });
-            else res.send(data);
-        });
+        const newRecord = await Course.create(course);
+        res.send(newRecord);
     };
 
     // Retrieve all Courses from the database.
-    static findAll = (req, res) => {
-        Course.getAll((err, data) => {
-            if (err)
-                res.status(500).send({
-                    message:
-                        err.message || "Some error occurred while retrieving courses."
-                });
-            else res.send(data);
-        });
+    static findAll = async (req, res) => {
+        try {
+            const courses=await Course.findAll();
+            res.send(courses);
+        } catch (error) {
+            console.log(error.message)
+        }
     };
 
     // Find a single Course with a courseId

@@ -1,5 +1,7 @@
 "use strict";
 
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -17,11 +19,7 @@ var _dotenv = _interopRequireDefault(require("dotenv"));
 
 var _index = _interopRequireDefault(require("./routes/index"));
 
-var _customer = _interopRequireDefault(require("./routes/customer.route"));
-
 var _course = _interopRequireDefault(require("./routes/course.route"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 _dotenv["default"].config();
 
@@ -33,7 +31,6 @@ app.use(_express["default"].urlencoded({
 }));
 app.use((0, _cookieParser["default"])());
 app.use(_express["default"]["static"](_path["default"].join(__dirname, '../public')));
-app.use('/customers', _customer["default"]);
 app.use('/courses', _course["default"]);
 app.use('/', _index["default"]);
 var port = process.env.PORT || 8080;
