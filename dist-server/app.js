@@ -21,7 +21,11 @@ var _index = _interopRequireDefault(require("./routes/index"));
 
 var _course = _interopRequireDefault(require("./routes/course.route"));
 
+var _db = _interopRequireDefault(require("./models/db"));
+
 _dotenv["default"].config();
+
+_db["default"].sync();
 
 var app = (0, _express["default"])();
 app.use((0, _morgan["default"])('dev'));
