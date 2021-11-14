@@ -5,8 +5,10 @@ import logger from 'morgan';
 import dotenv from 'dotenv'
 import indexRouter from './routes/index';
 import courseRoute from './routes/course.route'
+import sequelize from './models/db'
 
 dotenv.config();
+sequelize.sync();
 var app = express();
 app.use(logger('dev'));
 app.use(express.json());
