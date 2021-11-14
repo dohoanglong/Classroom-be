@@ -28,7 +28,7 @@ class course {
     // Retrieve all Courses from the database.
     static findAll = async (req, res) => {
         try {
-            const courses=await Course.findAll();
+            const courses = await Course.findAll();
             res.send(courses);
         } catch (error) {
             console.log(error.message)
@@ -36,7 +36,24 @@ class course {
     };
 
     // Find a single Course with a courseId
-    static findOne = (req, res) => {
+    static findOne = async (req, res) => {
+        try {
+            const course = Course.findOne({ where: { id: req.params.courseId } });
+
+            if (course) {
+                res.send(data);
+            } else {
+                res.status(404).send({
+                    message: `Not found Course with id ${req.params.courseId}.`
+                });
+            }
+        } catch (error) {
+            res.status(500).send({
+                message: "Error retrieving Course with id " + req.params.courseId
+            });
+        }
+
+
         Course.findById(req.params.courseId, (err, data) => {
             if (err) {
                 if (err.kind === "not_found") {
