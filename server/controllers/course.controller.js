@@ -38,7 +38,7 @@ class course {
     // Find a single Course with a courseId
     static findOne = async (req, res) => {
         try {
-            const course = Course.findOne({ where: { id: req.params.courseId } });
+            const course = await Course.findOne({ where: { id: req.params.courseId } });
 
             if (course) {
                 res.send(data);
@@ -48,25 +48,11 @@ class course {
                 });
             }
         } catch (error) {
+            console.log(error)
             res.status(500).send({
                 message: "Error retrieving Course with id " + req.params.courseId
             });
         }
-
-
-        Course.findById(req.params.courseId, (err, data) => {
-            if (err) {
-                if (err.kind === "not_found") {
-                    res.status(404).send({
-                        message: `Not found Course with id ${req.params.courseId}.`
-                    });
-                } else {
-                    res.status(500).send({
-                        message: "Error retrieving Course with id " + req.params.courseId
-                    });
-                }
-            } else res.send(data);
-        });
     };
 
     // Update a Course identified by the courseId in the request
