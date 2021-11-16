@@ -87,20 +87,32 @@ class course {
 
     // Delete a Course with the specified courseId in the request
     static delete = async (req, res) => {
-        const deletedCourse = Course.des
-        Course.remove(req.params.courseId, (err, data) => {
-            if (err) {
-                if (err.kind === "not_found") {
-                    res.status(404).send({
-                        message: `Not found Course with id ${req.params.courseId}.`
-                    });
-                } else {
-                    res.status(500).send({
-                        message: "Could not delete Course with id " + req.params.courseId
-                    });
+        try {
+            const successValue = await Course.destroy({
+                where: {
+                    id: req.params.courseId
                 }
-            } else res.send({ message: `Course was deleted successfully!` });
-        });
+            })
+
+            if (successValue) {
+                const deletedCourse = await Course.findOne({
+                    where: {
+                        id: req.params.courseId 
+                    },
+                    paranoid: false // <<< It will retrieve soft-deleted record
+                })
+                res.status(200).send(deletedCourse);
+            } else {
+                res.status(404).send({
+                    message: `Not found Course with id ${req.params.courseId}.`
+                });
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({
+                message: "Could not delete Course with id " + req.params.courseId
+            });
+        }
     };
 }
 

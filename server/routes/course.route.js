@@ -17,7 +17,5 @@ router.put("/", Courses.update);
 // Delete a Course with courseId
 router.delete("/:courseId", Courses.delete);
 
-// Create a new Course
-router.delete("/", Courses.deleteAll);
 
 export default router;

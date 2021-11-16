@@ -37,6 +37,7 @@ var Course = sequelize.define('course', {
       field: 'updated_at'
     }  
   }, {
-    freezeTableName: true // Model tableName will be the same as the model name
+    freezeTableName: true, // Model tableName will be the same as the model name
+    paranoid: true      // <<< Apply soft-deleted record
   });
 export default Course;
