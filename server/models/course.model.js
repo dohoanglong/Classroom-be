@@ -1,5 +1,5 @@
 import sequelize from './db.js';
-import Sequelize from 'sequelize'
+import {Sequelize} from 'sequelize'
 
 var Course = sequelize.define('course', {
     id: {
@@ -39,5 +39,4 @@ var Course = sequelize.define('course', {
   }, {
     freezeTableName: true // Model tableName will be the same as the model name
   });
-
 export default Course;

@@ -86,7 +86,8 @@ class course {
     };
 
     // Delete a Course with the specified courseId in the request
-    static delete = (req, res) => {
+    static delete = async (req, res) => {
+        const deletedCourse = Course.des
         Course.remove(req.params.courseId, (err, data) => {
             if (err) {
                 if (err.kind === "not_found") {
@@ -99,18 +100,6 @@ class course {
                     });
                 }
             } else res.send({ message: `Course was deleted successfully!` });
-        });
-    };
-
-    // Delete all Courses from the database.
-    static deleteAll = (req, res) => {
-        Course.removeAll((err, data) => {
-            if (err)
-                res.status(500).send({
-                    message:
-                        err.message || "Some error occurred while removing all courses."
-                });
-            else res.send({ message: `All Courses were deleted successfully!` });
         });
     };
 }
