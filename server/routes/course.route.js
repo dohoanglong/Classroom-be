@@ -12,12 +12,10 @@ router.get("/", Courses.findAll);
 router.get("/:courseId", Courses.findOne);
 
 // Update a Course with courseId
-router.put("/:courseId", Courses.update);
+router.put("/", Courses.update);
 
 // Delete a Course with courseId
 router.delete("/:courseId", Courses.delete);
 
-// Create a new Course
-router.delete("/", Courses.deleteAll);
 
 export default router;

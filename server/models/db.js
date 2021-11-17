@@ -1,24 +1,32 @@
-import mysql from 'mysql';
-import dbConfig from '../config/config.js';
+import { Pool } from 'pg'
+import {Sequelize} from 'sequelize'
 import dotenv from 'dotenv'
 dotenv.config();
 
 // Create a connection to the database
-const connection = mysql.createConnection({
-  host: dbConfig.HOST,
-  user: dbConfig.USER,
-  password: dbConfig.PASSWORD,
-  database: dbConfig.DB
-  // host: process.end.DB_HOST,
-  // user: process.end.DB_USER,
-  // password: process.end.DB_PASSWORD,
-  // database: process.end.DB
+const databaseConfig = {
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+}
+
+var sequelize = new Sequelize({
+  database: process.env.DB,
+  username: process.env.DATABASE_USERNAME,
+  password: process.env.DATABASE_PASSWORD,
+  host: process.env.DATABASE_HOST,
+  port: process.env.DATABASE_PORT,
+  dialect: "postgres",
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false // <<<<<<< YOU NEED THIS
+    }
+  },
 });
 
-// open the MySQL connection
-connection.connect(error => {
-  if (error) throw error;
-  console.log("Successfully connected to the database.");
-});
+const pool = new Pool(databaseConfig);
 
-export default connection;
+
+export default sequelize;

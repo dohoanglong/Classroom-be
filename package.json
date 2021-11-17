@@ -11,11 +11,13 @@
     "rimraf": "./node_modules/rimraf/bin.js",
     "transpile": "babel ./server --out-dir dist-server",
     "clean": "rimraf dist-server",
-    "watch:dev": "nodemon"
+    "watch:dev": "set NODE_ENV=development & nodemon",
+    "db:create": "sequelize-cli db:create"
   },
   "dependencies": {
     "@babel/cli": "^7.16.0",
     "@babel/core": "^7.16.0",
+    "@babel/plugin-transform-runtime": "^7.16.0",
     "@babel/preset-env": "^7.16.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
@@ -24,11 +26,16 @@
     "morgan": "~1.9.1",
     "mysql": "^2.18.1",
     "nodemon": "^2.0.14",
-    "npm-run-all": "^4.1.5"
+    "npm-run-all": "^4.1.5",
+    "pg": "^8.7.1",
+    "sequelize": "^6.9.0"
   },
   "babel": {
     "presets": [
       "@babel/preset-env"
+    ],
+    "plugins": [
+      "@babel/plugin-transform-runtime"
     ]
   },
   "nodemonConfig": {
@@ -44,6 +51,9 @@
     ]
   },
   "devDependencies": {
-    "rimraf": "^3.0.2"
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-runtime": "^6.26.0",
+    "rimraf": "^3.0.2",
+    "sequelize-cli": "^6.3.0"
   }
 }
