@@ -1,53 +1,47 @@
 import sequelize from './db.js';
-<<<<<<< HEAD
-import Sequelize from 'sequelize'
-=======
-import {Sequelize} from 'sequelize'
->>>>>>> 71d0e011de47d983d309ef362100838f18db9261
+import { Sequelize } from 'sequelize';
 
-var Course = sequelize.define('course', {
+var Course = sequelize.define(
+  'course',
+  {
     id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+      type: Sequelize.INTEGER,
     },
     name: {
-        allowNull: false,
+      allowNull: false,
       type: Sequelize.STRING,
-      field: 'first_name'
+      field: 'first_name',
     },
     subject: {
-        allowNull: false,
+      allowNull: false,
       type: Sequelize.STRING,
-      field: 'subject'
+      field: 'subject',
     },
-    image: {   
+    image: {
       type: Sequelize.STRING,
-      field: 'image'
+      field: 'image',
     },
     description: {
       type: Sequelize.STRING,
-      field: 'description'
+      field: 'description',
     },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE,
-      field: 'created_at'
+      field: 'created_at',
     },
     updatedAt: {
       allowNull: false,
       type: Sequelize.DATE,
-      field: 'updated_at'
-    }  
-  }, {
-<<<<<<< HEAD
-    freezeTableName: true // Model tableName will be the same as the model name
-  });
-
-=======
+      field: 'updated_at',
+    },
+  },
+  {
     freezeTableName: true, // Model tableName will be the same as the model name
-    paranoid: true      // <<< Apply soft-deleted record
-  });
->>>>>>> 71d0e011de47d983d309ef362100838f18db9261
+    paranoid: true, // <<< Apply soft-deleted record
+  }
+);
 export default Course;

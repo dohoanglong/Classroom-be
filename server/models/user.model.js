@@ -1,5 +1,5 @@
 import sequelize from './db.js';
-import Sequelize from 'sequelize';
+import { Sequelize } from 'sequelize';
 
 var User = sequelize.define(
   'user',

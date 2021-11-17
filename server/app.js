@@ -5,14 +5,9 @@ import logger from 'morgan';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import indexRouter from './routes/index';
-<<<<<<< HEAD
 import courseRoute from './routes/course.route';
 import userRoute from './routes/user.route';
 import sequelize from './models/db';
-=======
-import courseRoute from './routes/course.route'
-import sequelize from './models/db'
->>>>>>> 71d0e011de47d983d309ef362100838f18db9261
 
 dotenv.config();
 sequelize.sync();
@@ -31,12 +26,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../public')));
-<<<<<<< HEAD
 app.use('/courses', courseRoute);
 app.use('/user', userRoute);
-=======
-app.use('/courses',courseRoute);
->>>>>>> 71d0e011de47d983d309ef362100838f18db9261
 app.use('/', indexRouter);
 
 var port = process.env.PORT || 8080;
