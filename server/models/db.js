@@ -1,5 +1,9 @@
 import { Pool } from 'pg'
+<<<<<<< HEAD
 import Sequelize from 'sequelize'
+=======
+import {Sequelize} from 'sequelize'
+>>>>>>> 71d0e011de47d983d309ef362100838f18db9261
 import dotenv from 'dotenv'
 dotenv.config();
 
@@ -28,4 +32,10 @@ var sequelize = new Sequelize({
 const pool = new Pool(databaseConfig);
 
 
+<<<<<<< HEAD
+=======
+const pool = new Pool(databaseConfig);
+
+
+>>>>>>> 71d0e011de47d983d309ef362100838f18db9261
 export default sequelize;
