@@ -3,7 +3,6 @@ import User from '../models/user.model';
 class user {
   static create = async (req, res) => {
     try {
-      // Validate request
       if (!req.body) {
         res.status(400).send({
           message: 'Content can not be empty!',
@@ -11,16 +10,19 @@ class user {
       }
       //   check if exist mail
       const user = await User.findOne({ where: { mail: req.body.mail } });
-
+      
       if (user) {
         res
-          .status(400)
-          .send({ message: 'Existed mail', result: 0, content: null });
+        .status(400)
+        .send({ message: 'Existed mail', result: 0, content: null });
       }
       // Create a User
+      const encrytedPassword= await User.generateHash(req.body.password);
+      // Validate request
+      console.log(encrytedPassword);
       const newUser = {
         name: req.body.name,
-        password: req.body.password,
+        password: encrytedPassword,
         mail: req.body.mail,
         createdAt: Date(),
         updatedAt: Date(),

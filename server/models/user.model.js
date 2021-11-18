@@ -1,4 +1,5 @@
 import sequelize from './db.js';
+import bcrypt from 'bcrypt';
 import { Sequelize } from 'sequelize';
 
 var User = sequelize.define(
@@ -22,7 +23,7 @@ var User = sequelize.define(
       field: 'image',
     },
     password: {
-      allowNull: false,
+      allowNull: true,
       type: Sequelize.STRING,
       field: 'password',
     },
@@ -46,5 +47,13 @@ var User = sequelize.define(
     freezeTableName: true, // Model tableName will be the same as the model name
   }
 );
+
+User.generateHash = (password) => {
+  return bcrypt.hash(password, bcrypt.genSaltSync(10));
+}
+
+User.prototype.validPassword = (password) => {
+  return bcrypt.compare(password, this.password);
+}
 
 export default User;
