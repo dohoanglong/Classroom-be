@@ -22,7 +22,7 @@ var User = sequelize.define(
       field: 'image',
     },
     password: {
-      allowNull: false,
+      // allowNull: false,
       type: Sequelize.STRING,
       field: 'password',
     },

@@ -5,6 +5,7 @@ var router = express.Router();
 
 router.post('/', Users.create);
 router.post('/login', Users.findOne);
+router.post('/authSocial', Users.authSocial);
 router.get('/', Users.findAll);
 router.delete('/', Users.delete);
 
