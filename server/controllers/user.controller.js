@@ -83,20 +83,6 @@ class user {
     }
   };
 
-  static getUserDetail = async (req, res, next) => {
-    try {
-      console.log(req);
-      const user = await User.findOne({
-        where: { mail: req.user.email },
-        attributes: { exclude: ['password'] }
-      });
-      res.send(user);
-    } catch (error) {
-      console.log(error);
-      res.status(500).send({ message: 'Server Error!' });
-    }
-  }
-
   static authSocial = async (req, res, next) => {
     try {
       let data;
@@ -145,6 +131,55 @@ class user {
   //     console.log(error.message);
   //   }
   // };
+
+
+  static getUserDetail = async (req, res, next) => {
+    try {
+      const user = await User.findOne({
+        where: { mail: req.user.email },
+        attributes: { exclude: ['password'] }
+      });
+      res.send(user);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({ message: 'Server Error!' });
+    }
+  }
+
+  static mapStudentIdToAccount = async (req, res, next) => {
+    try {
+      const user = await User.findOne({
+        where: { id: req.user.id },
+        attributes: ['id', 'student_id']
+      });
+      
+      if (!user) {
+        res.status(400).send({
+          message: 'User does not exist',
+        });
+        return;
+      }
+      
+      console.log(user);
+      if (user.dataValues.student_id) {
+        res.status(400).send({
+          message: 'Student Id is already taken',
+        });
+        return;
+      }
+      const updatedUser = await User.update(req.body, {
+        where: {
+          id: req.user.id
+        },
+        returning: true,
+        plain: true,
+      });
+      res.send(updatedUser[1].dataValues);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({ message: 'Server Error!' });
+    }
+  }
 }
 
 export default user;

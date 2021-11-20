@@ -24,6 +24,7 @@ router.post('/login', function (req, res, next) {
             return;
         }
         req.user=user.dataValues;
+        req.user.password=null;
         next();
     })(req, res, next);
 }, auth.login);
