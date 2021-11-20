@@ -52,8 +52,8 @@ User.generateHash = (password) => {
   return bcrypt.hash(password, bcrypt.genSaltSync(10));
 };
 
-User.prototype.validPassword = (password) => {
-  return bcrypt.compare(password, this.password);
+User.isValidPassword = (password,currentPassword) => {
+  return bcrypt.compare(password, currentPassword);
 };
 
 export default User;

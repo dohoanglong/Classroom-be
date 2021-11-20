@@ -5,32 +5,37 @@
   "scripts": {
     "start": "npm run prod",
     "build": "npm-run-all clean transpile",
-    "server": "node ./dist-server/bin/www",
+    "server": "node  --inspect ./dist-server/bin/www",
     "dev": "NODE_ENV=development npm-run-all build server",
     "prod": "NODE_ENV=production npm-run-all build server",
     "rimraf": "./node_modules/rimraf/bin.js",
     "transpile": "babel ./server --out-dir dist-server",
     "clean": "rimraf dist-server",
     "watch:dev": "set NODE_ENV=development & nodemon",
-    "db:create": "sequelize-cli db:create"
+    "db:create": "sequelize-cli db:create",
+    "debug": "npm start --debug"
   },
   "dependencies": {
     "@babel/cli": "^7.16.0",
     "@babel/core": "^7.16.0",
     "@babel/plugin-transform-runtime": "^7.16.0",
     "@babel/preset-env": "^7.16.0",
-    "bcrypt": "^5.0.1",
     "axios": "^0.24.0",
+    "bcrypt": "^5.0.1",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
     "debug": "~2.6.9",
     "dotenv": "^10.0.0",
     "express": "~4.16.1",
     "google-auth-library": "^7.10.2",
+    "jsonwebtoken": "^8.5.1",
     "morgan": "~1.9.1",
     "mysql": "^2.18.1",
     "nodemon": "^2.0.14",
     "npm-run-all": "^4.1.5",
+    "passport": "^0.5.0",
+    "passport-jwt": "^4.0.0",
+    "passport-local": "^1.0.0",
     "pg": "^8.7.1",
     "sequelize": "^6.9.0"
   },
@@ -40,7 +45,13 @@
     ],
     "plugins": [
       "@babel/plugin-transform-runtime"
-    ]
+    ],
+    "env": {
+      "debug": {
+        "sourceMaps": "inline",
+        "retainLines": true
+      }
+    }
   },
   "nodemonConfig": {
     "exec": "npm run dev",

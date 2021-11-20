@@ -5,13 +5,17 @@ import logger from 'morgan';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import indexRouter from './routes/index';
-import courseRoute from './routes/course.route';
-import userRoute from './routes/user.route';
 import sequelize from './models/db';
+import passport from './middlewares/auth.middleware'
+
+import courseRoute from './routes/course.route';
+import authRoute from './routes/auth.route'
 
 dotenv.config();
 sequelize.sync();
 var app = express();
+app.use(passport.initialize());
+
 
 const corsOption = {
   origin: true,
@@ -27,8 +31,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../public')));
 app.use('/courses', courseRoute);
-app.use('/user', userRoute);
+app.use('/auth', authRoute);
 app.use('/', indexRouter);
+
+app.use(function (err, req, res, next) {
+  console.error(err)
+  res.status(500).send('Something broke!')
+})
 
 var port = process.env.PORT || 8080;
 

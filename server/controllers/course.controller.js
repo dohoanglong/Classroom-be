@@ -43,7 +43,7 @@ class course {
       });
 
       if (course) {
-        res.send(data);
+        res.send(course);
       } else {
         res.status(404).send({
           message: `Not found Course with id ${req.params.courseId}.`,
