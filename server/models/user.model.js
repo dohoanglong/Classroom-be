@@ -1,8 +1,9 @@
 import sequelize from './db.js';
+import bcrypt from 'bcrypt';
 import { Sequelize } from 'sequelize';
 
-var Course = sequelize.define(
-  'course',
+var User = sequelize.define(
+  'user',
   {
     id: {
       allowNull: false,
@@ -13,20 +14,23 @@ var Course = sequelize.define(
     name: {
       allowNull: false,
       type: Sequelize.STRING,
-      field: 'first_name',
+      field: 'name',
     },
-    subject: {
-      allowNull: false,
-      type: Sequelize.STRING,
-      field: 'subject',
-    },
+
     image: {
+      // allowNull: false,
       type: Sequelize.STRING,
       field: 'image',
     },
-    description: {
+    password: {
+      allowNull: true,
       type: Sequelize.STRING,
-      field: 'description',
+      field: 'password',
+    },
+    mail: {
+      allowNull: false,
+      type: Sequelize.STRING,
+      field: 'mail',
     },
     createdAt: {
       allowNull: false,
@@ -41,7 +45,15 @@ var Course = sequelize.define(
   },
   {
     freezeTableName: true, // Model tableName will be the same as the model name
-    paranoid: true, // <<< Apply soft-deleted record
   }
 );
-export default Course;
+
+User.generateHash = (password) => {
+  return bcrypt.hash(password, bcrypt.genSaltSync(10));
+}
+
+User.prototype.validPassword = (password) => {
+  return bcrypt.compare(password, this.password);
+}
+
+export default User;
