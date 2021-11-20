@@ -83,6 +83,20 @@ class user {
     }
   };
 
+  static getUserDetail = async (req, res, next) => {
+    try {
+      console.log(req);
+      const user = await User.findOne({
+        where: { mail: req.user.email },
+        attributes: { exclude: ['password'] }
+      });
+      res.send(user);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({ message: 'Server Error!' });
+    }
+  }
+
   static authSocial = async (req, res, next) => {
     try {
       let data;
@@ -92,7 +106,7 @@ class user {
       if (req.body.ggToken) {
         data = await verifyGg(req.body.ggToken);
       }
-
+      console.log(data);
       if (data.email === req.body.mail) {
         const user = await User.findOne({ where: { mail: req.body.mail } });
 
@@ -123,14 +137,14 @@ class user {
     }
   };
 
-  static findAll = async (req, res) => {
-    try {
-      const users = await User.findAll();
-      res.send(users);
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
+  // static findAll = async (req, res) => {
+  //   try {
+  //     const users = await User.findAll();
+  //     res.send(users);
+  //   } catch (error) {
+  //     console.log(error.message);
+  //   }
+  // };
 }
 
 export default user;

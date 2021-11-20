@@ -12,6 +12,7 @@ export async function verifyGg(token) {
     const payload = ticket.getPayload();
     return payload;
   } catch (e) {
+    console.log(e);
     return false;
   }
 }
