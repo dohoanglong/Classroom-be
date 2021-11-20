@@ -6,12 +6,12 @@
     "start": "npm run prod",
     "build": "npm-run-all clean transpile",
     "server": "node ./dist-server/bin/www",
-    "dev": "SET NODE_ENV=development npm-run-all build server",
-    "prod": "SET NODE_ENV=production npm-run-all build server",
+    "dev": "NODE_ENV=development npm-run-all build server",
+    "prod": "NODE_ENV=production npm-run-all build server",
     "rimraf": "./node_modules/rimraf/bin.js",
     "transpile": "babel ./server --out-dir dist-server",
     "clean": "rimraf dist-server",
-    "watch:dev": "set NODE_ENV=development & nodemon",  
+    "watch:dev": "set NODE_ENV=development & nodemon",
     "db:create": "sequelize-cli db:create"
   },
   "dependencies": {
@@ -27,7 +27,9 @@
     "mysql": "^2.18.1",
     "nodemon": "^2.0.14",
     "npm-run-all": "^4.1.5",
-    "sequelize": "^6.9.0"
+    "pg": "^8.7.1",
+    "sequelize": "^6.9.0",
+    "win-node-env": "^0.4.0"
   },
   "babel": {
     "presets": [
