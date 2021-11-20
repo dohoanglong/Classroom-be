@@ -28,5 +28,7 @@ router.post('/login', function (req, res, next) {
     })(req, res, next);
 }, auth.login);
 
+router.get('/logout',auth.logout);
+
 export default router;
 

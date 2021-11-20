@@ -16,6 +16,13 @@ class auth {
             token
         })
     }
+
+    static logout = async (req,res) => {
+        req.logout();
+        res.json({
+            message: "Logout successful"
+        })
+    }
 }
 
 export default auth;

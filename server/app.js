@@ -10,6 +10,7 @@ import passport from './middlewares/auth.middleware'
 
 import courseRoute from './routes/course.route';
 import authRoute from './routes/auth.route'
+import userRoute from './routes/user.route'
 
 dotenv.config();
 sequelize.sync();
