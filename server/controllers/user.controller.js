@@ -1,7 +1,8 @@
 import User from '../models/user.model';
+import { verifyFb, verifyGg } from '../helpers/auth';
 
 class user {
-  static create = async (req, res) => {
+  static create = async (req, res, next, isFromSocial = false) => {
     try {
       if (!req.body) {
         res.status(400).send({
@@ -10,16 +11,18 @@ class user {
       }
       //   check if exist mail
       const user = await User.findOne({ where: { mail: req.body.mail } });
-      
+
       if (user) {
         res
-        .status(400)
-        .send({ message: 'Existed mail', result: 0, content: null });
+          .status(400)
+          .send({ message: 'Existed mail', result: 0, content: null });
       }
       // Create a User
-      const encrytedPassword= await User.generateHash(req.body.password);
+      let encrytedPassword = null;
+      if (!isFromSocial) {
+        encrytedPassword = await User.generateHash(req.body.password);
+      }
       // Validate request
-      console.log(encrytedPassword);
       const newUser = {
         name: req.body.name,
         password: encrytedPassword,
@@ -44,24 +47,62 @@ class user {
   };
 
   // Find a single user
-  static findOne = async (req, res) => {
+  static findOne = async (req, res, next, isFromSocial = false) => {
     try {
       const user = await User.findOne({ where: { mail: req.body.mail } });
-      if (!user)
-        res.status(400).send({
-          message: 'Non existed mail',
-          result: 0,
-          content: null,
+      if (!isFromSocial) {
+        if (!user)
+          res.status(400).send({
+            message: 'Non existed mail',
+            result: 0,
+            content: null,
+          });
+        if (user.password !== req.body.password) {
+          res.status(400).send({
+            message: 'Wrong password',
+            result: 0,
+            content: null,
+          });
+        } else
+          res.status(200).send({
+            message: 'Successfully log in',
+            result: 1,
+            content: { user },
+          });
+      } else
+        res.status(200).send({
+          message: 'Successfully log in',
+          result: 1,
+          content: { user },
         });
-      if (user.password !== req.body.password)
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({
+        message: 'Error server ',
+      });
+    }
+  };
+
+  static authSocial = async (req, res, next) => {
+    try {
+      let data;
+      if (req.body.fbToken) {
+        data = await verifyFb(req.body.fbToken);
+      }
+      if (req.body.ggToken) {
+        data = await verifyGg(req.body.ggToken);
+      }
+
+      if (data.email === req.body.mail) {
+        const user = await User.findOne({ where: { mail: req.body.mail } });
+
+        if (!user) this.create(req, res, next, true);
+        else this.findOne(req, res, next, true);
+      } else {
         res.status(400).send({
-          message: 'Wrong password',
-          result: 0,
-          content: null,
+          message: 'Invalid token ',
         });
-      res
-        .status(200)
-        .send({ message: 'Successfully log in', result: 1, content: { user } });
+      }
     } catch (error) {
       console.log(error);
       res.status(500).send({

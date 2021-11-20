@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import { Sequelize } from 'sequelize';
 
 var User = sequelize.define(
-  'user',
+  'account',
   {
     id: {
       allowNull: false,
@@ -23,7 +23,7 @@ var User = sequelize.define(
       field: 'image',
     },
     password: {
-      allowNull: true,
+      // allowNull: false,
       type: Sequelize.STRING,
       field: 'password',
     },
@@ -50,10 +50,10 @@ var User = sequelize.define(
 
 User.generateHash = (password) => {
   return bcrypt.hash(password, bcrypt.genSaltSync(10));
-}
+};
 
 User.prototype.validPassword = (password) => {
   return bcrypt.compare(password, this.password);
-}
+};
 
 export default User;
