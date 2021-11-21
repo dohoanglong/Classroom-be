@@ -2,6 +2,7 @@ import Course from '../models/course.model';
 import User from '../models/user.model';
 import UsersCourses from '../models/usersCourses.model'
 import { sendInvitationLink, validateInvitationLink, generateInvitationLink } from '../utils/emailer.util';
+import { Op } from 'sequelize';
 
 // Create and Save a new Course
 class course {
@@ -198,10 +199,14 @@ class course {
           res.status(400).send({ messsage: 'User doesn not exist' });
           return;
         }
+
         const usersCourse = await UsersCourses.findOne({
           where: {
             courseId: verifiedJwt.courseId,
-            studentId: user.id
+            [Op.or]: [
+              { studentId: user.id },
+              { subTeacherId: user.id },
+            ]
           }
         });
 
@@ -209,11 +214,20 @@ class course {
           res.status(400).send({ messsage: 'User already joined this class' });
           return;
         }
-
-        const newUsersCourses = {
+        var newUsersCourses = {
           courseId: verifiedJwt.courseId,
-          teacherId: verifiedJwt.teacherId,
-          studentId: user.id
+          teacherId: verifiedJwt.teacherId
+        }
+        if (verifiedJwt.role === 'teacher') {
+          newUsersCourses = {
+            ...newUsersCourses,
+            subTeacherId: user.id
+          }
+        } else {
+          newUsersCourses = {
+            ...newUsersCourses,
+            studentId: user.id
+          }
         }
 
         const userCourses = await UsersCourses.create(newUsersCourses);
@@ -228,7 +242,7 @@ class course {
     }
   }
 
-  static validateJoinningRequestByLink = async (req,res) => {
+  static validateJoinningRequestByLink = async (req, res) => {
     try {
       const verifiedJwt = validateInvitationLink(req.query);
 
@@ -277,7 +291,7 @@ class course {
   static createInvitationLink = async (req, res) => {
     try {
       const invitationLink = await generateInvitationLink(req.body);
-      res.send({invitationLink});
+      res.send({ invitationLink });
     } catch (error) {
       console.log(error);
       res.status(500).send({

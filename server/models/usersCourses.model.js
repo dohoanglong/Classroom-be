@@ -16,13 +16,18 @@ var UsersCourses = sequelize.define(
       field: 'course_id',
     },
     studentId: {
-      allowNull: false,
+      allowNull: true,
       type: Sequelize.INTEGER,
       field: 'student_id',
     },
     teacherId: {
       type: Sequelize.INTEGER,
       field: 'teacher_id',
+    },
+    subTeacherId: {
+      allowNull: true,
+      type: Sequelize.INTEGER,
+      field: 'subteacher_id',
     },
     createdAt: {
       allowNull: false,
