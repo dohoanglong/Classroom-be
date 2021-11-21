@@ -31,7 +31,7 @@ class course {
 
   static findAllByUser = async (req, res) => {
     try {
-      const courseIdsAsRoleTeacher = await UsersCourses.findAll({
+      const userCoursesAsRoleTeacher = await UsersCourses.findAll({
         attributes: ['courseId', 'teacherId'],
         group: ['courseId', 'teacherId'],
         where: {
@@ -43,7 +43,7 @@ class course {
         raw: true
       });
 
-      const courseIdsAsRoleStudent = await UsersCourses.findAll({
+      const userCoursesAsRoleStudent = await UsersCourses.findAll({
         attributes: ['courseId', 'teacherId'],
         group: ['courseId', 'teacherId'],
         where: {
@@ -52,37 +52,39 @@ class course {
         raw: true
       });
 
-      var coursesAsRoleTeacher = await Course.findAll({
+      var coursesAsRoleTeacher =[];
+      coursesAsRoleTeacher = await Course.findAll({
         where: {
           id: {
-            [Op.or]: courseIdsAsRoleTeacher.map(arr => arr.courseId)
+            [Op.in]: userCoursesAsRoleTeacher.map(arr => arr.courseId)
           }
         },
         raw: true
       })
 
-      var coursesAsRoleStudent = await Course.findAll({
+      var coursesAsRoleStudent =[];
+      coursesAsRoleStudent = await Course.findAll({
         where: {
           id: {
-            [Op.or]: courseIdsAsRoleStudent.map(arr => arr.courseId)
+            [Op.in]: userCoursesAsRoleStudent.map(arr => arr.courseId)
           }
         },
         raw: true
       })
 
-      const teacherAtAllCourses = await User.findAll({
+      const teachers = await User.findAll({
         attributes: ['id', 'name'],
         where: {
           [Op.or]: [{
             id:
             {
-              [Op.or]: courseIdsAsRoleTeacher.map(arr => arr.teacherId)
+              [Op.in]: userCoursesAsRoleTeacher.map(arr => arr.teacherId)
             }
           },
           {
             id:
             {
-              [Op.or]: courseIdsAsRoleStudent.map(arr => arr.teacherId)
+              [Op.in]: userCoursesAsRoleStudent.map(arr => arr.teacherId)
             }
           }
           ]
@@ -91,8 +93,8 @@ class course {
       })
 
       coursesAsRoleTeacher = coursesAsRoleTeacher.map(obj => {
-        const teacherId = courseIdsAsRoleTeacher.find(course => course.courseId = obj.id).teacherId;
-        const teacher = teacherAtAllCourses.find(teacher => teacher.id === teacherId);
+        const teacherId = userCoursesAsRoleTeacher.find(course => course.courseId = obj.id).teacherId;
+        const teacher = teachers.find(teacher => teacher.id === teacherId);
         return {
           ...obj,
           teacherName: teacher.name,
@@ -101,8 +103,8 @@ class course {
       })
 
       coursesAsRoleStudent = coursesAsRoleStudent.map(obj => {
-        const teacherId = courseIdsAsRoleStudent.find(course => course.courseId = obj.id).teacherId;
-        const teacher = teacherAtAllCourses.find(teacher => teacher.id === teacherId);
+        const teacherId = userCoursesAsRoleStudent.find(course => course.courseId = obj.id).teacherId;
+        const teacher = teachers.find(teacher => teacher.id === teacherId);
         return {
           ...obj,
           teacherName: teacher.name,
@@ -111,7 +113,7 @@ class course {
       })
 
       const returnObject = {
-        courseList: coursesAsRoleTeacher.concat(coursesAsRoleStudent)
+        courses: coursesAsRoleStudent.concat(coursesAsRoleTeacher)
       }
 
       res.send(returnObject)
