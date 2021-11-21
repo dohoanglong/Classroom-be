@@ -4,6 +4,10 @@ import Course from '../models/course.model';
 class course {
   static create = async (req, res) => {
     // Validate request
+    console.log(
+      req.body,
+      '----------------------------------------------------'
+    );
     if (!req.body) {
       res.status(400).send({
         message: 'Content can not be empty!',
@@ -22,7 +26,7 @@ class course {
 
     // Save Course in the database
     const newRecord = await Course.create(course);
-    res.send(newRecord);
+    res.status(200).send(newRecord);
   };
 
   // Retrieve all Courses from the database.
