@@ -1,7 +1,7 @@
 import Course from '../models/course.model';
 import User from '../models/user.model';
 import UsersCourses from '../models/usersCourses.model'
-import { sendInvitationLink, validateInvitationLink } from '../utils/emailer.util';
+import { sendInvitationLink, validateInvitationLink, generateInvitationLink } from '../utils/emailer.util';
 
 // Create and Save a new Course
 class course {
@@ -161,7 +161,7 @@ class course {
         return;
       }
 
-      const usersCourse = UsersCourses.findOne({
+      const usersCourse = await UsersCourses.findOne({
         where: {
           courseId: courseId,
           studentId: user.id
@@ -182,7 +182,7 @@ class course {
     }
   }
 
-  static validateJoinningRequest = async (req, res) => {
+  static validateJoinningRequestByEmail = async (req, res) => {
     try {
       const verifiedJwt = validateInvitationLink(req.query);
 
@@ -198,7 +198,7 @@ class course {
           res.status(400).send({ messsage: 'User doesn not exist' });
           return;
         }
-        const usersCourse = UsersCourses.findOne({
+        const usersCourse = await UsersCourses.findOne({
           where: {
             courseId: verifiedJwt.courseId,
             studentId: user.id
@@ -220,6 +220,64 @@ class course {
 
         res.send(userCourses);
       }
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({
+        message: 'Server error'
+      });
+    }
+  }
+
+  static validateJoinningRequestByLink = async (req,res) => {
+    try {
+      const verifiedJwt = validateInvitationLink(req.query);
+
+      if (verifiedJwt) {
+        const user = await User.findOne({
+          where: {
+            mail: req.user.email
+          },
+          raw: true
+        });
+
+        if (!user) {
+          res.status(400).send({ messsage: 'User doesn not exist' });
+          return;
+        }
+        const usersCourse = await UsersCourses.findOne({
+          where: {
+            courseId: verifiedJwt.courseId,
+            studentId: user.id
+          }
+        });
+
+        if (usersCourse) {
+          res.status(400).send({ messsage: 'User already joined this class' });
+          return;
+        }
+
+        const newUsersCourses = {
+          courseId: verifiedJwt.courseId,
+          teacherId: verifiedJwt.teacherId,
+          studentId: user.id
+        }
+
+        const userCourses = await UsersCourses.create(newUsersCourses);
+
+        res.send(userCourses);
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({
+        message: 'Server error'
+      });
+    }
+  }
+
+  static createInvitationLink = async (req, res) => {
+    try {
+      const invitationLink = await generateInvitationLink(req.body);
+      res.send({invitationLink});
     } catch (error) {
       console.log(error);
       res.status(500).send({

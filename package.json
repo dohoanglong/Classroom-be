@@ -38,11 +38,19 @@
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "pg": "^8.7.1",
+    "prettylink": "^1.0.0",
     "sequelize": "^6.9.0"
   },
   "babel": {
     "presets": [
-      "@babel/preset-env"
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": "10"
+          }
+        }
+      ]
     ],
     "plugins": [
       "@babel/plugin-transform-runtime"
