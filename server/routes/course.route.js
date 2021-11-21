@@ -4,7 +4,12 @@ import passport from 'passport';
 var router = express.Router();
 // Create a new Course
 
+router.get("/joinClass", Courses.validateJoinningRequest);
+router.post('/restore/:courseId',Courses.restore);
 router.post("/", Courses.create);
+
+router.post("/sendInvitation", Courses.sendInvitationLink);
+
 
 // Retrieve all Courses
 router.get("/",passport.authenticate('jwt', { session: false }),  Courses.findAll);

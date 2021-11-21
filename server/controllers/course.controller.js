@@ -1,4 +1,7 @@
 import Course from '../models/course.model';
+import User from '../models/user.model';
+import UsersCourses from '../models/usersCourses.model'
+import { sendInvitationLink, validateInvitationLink } from '../utils/emailer.util';
 
 // Create and Save a new Course
 class course {
@@ -116,6 +119,114 @@ class course {
       });
     }
   };
+
+  static restore = async (req, res) => {
+    try {
+      const course = await Course.findOne({
+        where: { id: req.params.courseId },
+        paranoid: false
+      });
+      if (!course) {
+        res.status(400).send({ messsage: 'Course does not exist' });
+        return;
+      }
+      course.restore();
+      res.status(200).send({ messsage: 'Course has been restored' });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({
+        message: 'Server error',
+      });
+    }
+  };
+
+  static sendInvitationLink = async (req, res) => {
+    try {
+      const { email, courseId } = req.body;
+
+      const user = await User.findOne({
+        where: {
+          mail: email
+        },
+        raw: true
+      });
+      if (!user) {
+        res.status(400).send({ messsage: 'User does not exist' });
+        return;
+      }
+      const course = await Course.findByPk(courseId);
+      console.log(course);
+      if (!course) {
+        res.status(400).send({ messsage: 'Class does not exist' });
+        return;
+      }
+
+      const usersCourse = UsersCourses.findOne({
+        where: {
+          courseId: courseId,
+          studentId: user.id
+        }
+      });
+
+      if (usersCourse) {
+        res.status(400).send({ messsage: 'User already joined this class' });
+        return;
+      }
+
+      sendInvitationLink(req, res)
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({
+        message: 'Server error'
+      });
+    }
+  }
+
+  static validateJoinningRequest = async (req, res) => {
+    try {
+      const verifiedJwt = validateInvitationLink(req.query);
+
+      if (verifiedJwt) {
+        const user = await User.findOne({
+          where: {
+            mail: verifiedJwt.email
+          },
+          raw: true
+        });
+
+        if (!user) {
+          res.status(400).send({ messsage: 'User doesn not exist' });
+          return;
+        }
+        const usersCourse = UsersCourses.findOne({
+          where: {
+            courseId: verifiedJwt.courseId,
+            studentId: user.id
+          }
+        });
+
+        if (usersCourse) {
+          res.status(400).send({ messsage: 'User already joined this class' });
+          return;
+        }
+
+        const newUsersCourses = {
+          courseId: verifiedJwt.courseId,
+          teacherId: verifiedJwt.teacherId,
+          studentId: user.id
+        }
+
+        const userCourses = await UsersCourses.create(newUsersCourses);
+
+        res.send(userCourses);
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({
+        message: 'Server error'
+      });
+    }
+  }
 }
 
 export default course;
