@@ -31,17 +31,26 @@
     "jsonwebtoken": "^8.5.1",
     "morgan": "~1.9.1",
     "mysql": "^2.18.1",
+    "nodemailer": "^6.7.1",
     "nodemon": "^2.0.14",
     "npm-run-all": "^4.1.5",
     "passport": "^0.5.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "pg": "^8.7.1",
+    "prettylink": "^1.0.0",
     "sequelize": "^6.9.0"
   },
   "babel": {
     "presets": [
-      "@babel/preset-env"
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": "10"
+          }
+        }
+      ]
     ],
     "plugins": [
       "@babel/plugin-transform-runtime"

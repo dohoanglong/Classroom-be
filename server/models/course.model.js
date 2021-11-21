@@ -28,6 +28,11 @@ var Course = sequelize.define(
       type: Sequelize.STRING,
       field: 'description',
     },
+    teacherId: {
+      allowNull: false,
+      type: Sequelize.INTEGER,
+      field: 'teacherId',
+    },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE,

@@ -16,6 +16,11 @@ var User = sequelize.define(
       type: Sequelize.STRING,
       field: 'name',
     },
+    studentId: {
+      allowNull: true,
+      type: Sequelize.STRING,
+      field: 'student_id',
+    },
 
     image: {
       // allowNull: false,
