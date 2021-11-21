@@ -1,5 +1,8 @@
 import User from '../models/user.model';
 import { verifyFb, verifyGg } from '../helpers/auth';
+import { Op } from 'sequelize';
+import Course from '../models/course.model';
+import UsersCourses from '../models/usersCourses.model';
 
 class user {
   static create = async (req, res, next, isFromSocial = false) => {
@@ -146,20 +149,93 @@ class user {
     }
   }
 
+  static getUserInClass = async (req, res) => {
+    try {
+      var queries = {
+        courseId: req.body.courseId
+      };
+
+      if (req.body.filter === 'student') {
+        queries = {
+          ...queries,
+          studentId: {
+            [Op.not]: null
+          }
+        };
+      }
+
+      if (req.body.filter === 'teacher') {
+        queries = {
+          ...queries,
+          studentId: {
+            [Op.is]: null
+          }
+        };
+      }
+
+      const usersCourses = await UsersCourses.findAll({
+        attributes: ['courseId', 'teacherId', 'subTeacherId', 'studentId'],
+        where: queries,
+        raw: true
+      })
+
+      var teachers = [];
+      var students = [];
+
+      if (req.body.filter === 'student' || !req.body.filter) {
+        students = await User.findAll({
+          attributes: ['id', 'name', 'mail'],
+          where: {
+            id: usersCourses.map(obj => obj.studentId).filter(obj => obj != null)
+          },
+          raw: true
+        })
+        students = students.map(student => {
+          return {
+            ...student,
+            isTeacher: false
+          }
+        });
+      }
+      const teacherIds = usersCourses.map(obj => obj.subTeacherId)
+        .concat([usersCourses[0].teacherId]);//add main teacher
+      if (req.body.filter === 'teacher' || !req.body.filter) {
+        teachers = await User.findAll({
+          attributes: ['id', 'name', 'mail'],
+          where: {
+            id: teacherIds.filter(obj => obj != null)
+          },
+          raw: true
+        })
+        teachers = teachers.map(teacher => {
+          return {
+            ...teacher,
+            isTeacher: true
+          }
+        });
+      }
+
+      res.send({ users: teachers.concat(students) });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({ message: 'Server Error!' });
+    }
+  }
+
   static mapStudentIdToAccount = async (req, res, next) => {
     try {
       const user = await User.findOne({
         where: { id: req.user.id },
         attributes: ['id', 'student_id']
       });
-      
+
       if (!user) {
         res.status(400).send({
           message: 'User does not exist',
         });
         return;
       }
-      
+
       console.log(user);
       if (user.dataValues.student_id) {
         res.status(400).send({
