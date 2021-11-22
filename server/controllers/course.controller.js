@@ -24,9 +24,19 @@ class course {
       updatedAt: Date(),
     };
 
+    // Create a Users Course
+    const newCourse = await Course.create(course);
+
+    const newUsersCourses = {
+      courseId: newCourse.dataValues.id,
+      teacherId: req.user.id,
+      createdAt: Date(),
+      updatedAt: Date(),
+    };
+    await UsersCourses.create(newUsersCourses);
+
     // Save Course in the database
-    const newRecord = await Course.create(course);
-    res.send(newRecord);
+    res.send(newCourse);
   };
 
   static findAllByUser = async (req, res) => {
