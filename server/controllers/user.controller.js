@@ -198,7 +198,7 @@ class user {
         });
       }
       const teacherIds = usersCourses.map(obj => obj.subTeacherId)
-        .concat([usersCourses[0].teacherId]);//add main teacher
+        .concat([usersCourses[0]?.teacherId]);//add main teacher
       if (req.body.filter === 'teacher' || !req.body.filter) {
         teachers = await User.findAll({
           attributes: ['id', 'name', 'mail'],

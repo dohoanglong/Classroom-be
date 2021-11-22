@@ -7,7 +7,7 @@ var router = express.Router();
 router.get("/joinClass", Courses.validateJoinningRequestByEmail);
 router.get("/joinClassByLink",passport.authenticate('jwt', { session: false }), Courses.validateJoinningRequestByLink);
 router.post('/restore/:courseId',Courses.restore);
-router.post("/", Courses.create);
+router.post("/",passport.authenticate('jwt', { session: false }), Courses.create);
 
 //send invitation link via email
 router.post("/sendInvitation", Courses.sendInvitationLink);

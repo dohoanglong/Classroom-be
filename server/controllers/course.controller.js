@@ -52,7 +52,7 @@ class course {
         raw: true
       });
 
-      var coursesAsRoleTeacher =[];
+      var coursesAsRoleTeacher = [];
       coursesAsRoleTeacher = await Course.findAll({
         where: {
           id: {
@@ -62,7 +62,7 @@ class course {
         raw: true
       })
 
-      var coursesAsRoleStudent =[];
+      var coursesAsRoleStudent = [];
       coursesAsRoleStudent = await Course.findAll({
         where: {
           id: {
@@ -235,7 +235,7 @@ class course {
         raw: true
       });
       if (!user) {
-        res.status(400).send({ messsage: 'User does not exist' });
+        res.status(400).send({ messsage: 'This user did not register yet' });
         return;
       }
       const course = await Course.findByPk(courseId);
@@ -253,7 +253,7 @@ class course {
       });
 
       if (usersCourse) {
-        res.status(400).send({ messsage: 'User already joined this class' });
+        res.status(400).send({ messsage: 'This user already joined this class' });
         return;
       }
 
@@ -279,7 +279,7 @@ class course {
         });
 
         if (!user) {
-          res.status(400).send({ messsage: 'User doesn not exist' });
+          res.status(400).send({ messsage: 'This user does not exist' });
           return;
         }
 
@@ -294,7 +294,7 @@ class course {
         });
 
         if (usersCourse) {
-          res.status(400).send({ messsage: 'User already joined this class' });
+          res.status(400).send({ messsage: 'This user already joined this class' });
           return;
         }
         var newUsersCourses = {
@@ -315,7 +315,7 @@ class course {
 
         const userCourses = await UsersCourses.create(newUsersCourses);
 
-        res.redirect('https://classroom-manager.netlify.app/course/'+userCourses.courseId);
+        res.redirect('https://classroom-manager.netlify.app/course/' + userCourses.courseId);
         res.send(userCourses);
       }
     } catch (error) {
@@ -339,7 +339,7 @@ class course {
         });
 
         if (!user) {
-          res.status(400).send({ messsage: 'User doesn not exist' });
+          res.status(400).send({ messsage: 'This user did not register yet' });
           return;
         }
         const usersCourse = await UsersCourses.findOne({
@@ -350,7 +350,7 @@ class course {
         });
 
         if (usersCourse) {
-          res.status(400).send({ messsage: 'User already joined this class' });
+          res.status(400).send({ messsage: 'This user already joined this class' });
           return;
         }
 
