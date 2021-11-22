@@ -24,7 +24,7 @@ router.post('/createInvitationLink', Courses.createInvitationLink);
 router.get(
   '/',
   passport.authenticate('jwt', { session: false }),
-  Courses.findAll
+  Courses.findAllByUser
 );
 
 // Retrieve a single Course with courseId
