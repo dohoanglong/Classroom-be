@@ -139,11 +139,31 @@ class course {
   // Find a single Course with a courseId
   static findOne = async (req, res) => {
     try {
-      const course = await Course.findOne({
+      var course = await Course.findOne({
         where: { id: req.params.courseId },
+        raw: true
+      });
+
+      const userCourse = await UsersCourses.findAll({
+        where: {
+          courseId: req.params.courseId,
+          [Op.or]: [{ teacherId: req.user.id }, { subTeacherId: req.user.id }],
+        },
+        raw: true,
       });
 
       if (course) {
+        if (userCourse.length) {
+          course = {
+            ...course,
+            isTeacher: true
+          }
+        } else {
+          course = {
+            ...course,
+            isTeacher: false
+          }
+        }
         res.send(course);
       } else {
         res.status(404).send({
