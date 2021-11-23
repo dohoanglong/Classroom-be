@@ -17,10 +17,13 @@ router.post(
   Courses.create
 );
 
+//send invitation link via email
 router.post('/sendInvitation', Courses.sendInvitationLink);
+
+//create invitation link, everyone who clicked is able to join class
 router.post('/createInvitationLink', Courses.createInvitationLink);
 
-// Retrieve all Courses
+// Retrieve all Courses of a specific user
 router.get(
   '/',
   passport.authenticate('jwt', { session: false }),

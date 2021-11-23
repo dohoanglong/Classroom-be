@@ -57,7 +57,7 @@ User.generateHash = (password) => {
   return bcrypt.hash(password, bcrypt.genSaltSync(10));
 };
 
-User.isValidPassword = (password,currentPassword) => {
+User.isValidPassword = (password, currentPassword) => {
   return bcrypt.compare(password, currentPassword);
 };
 

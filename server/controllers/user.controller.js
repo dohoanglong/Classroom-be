@@ -135,32 +135,31 @@ class user {
   //   }
   // };
 
-
   static getUserDetail = async (req, res, next) => {
     try {
       const user = await User.findOne({
         where: { mail: req.user.email },
-        attributes: { exclude: ['password'] }
+        attributes: { exclude: ['password'] },
       });
       res.send(user);
     } catch (error) {
       console.log(error);
       res.status(500).send({ message: 'Server Error!' });
     }
-  }
+  };
 
   static getUserInClass = async (req, res) => {
     try {
       var queries = {
-        courseId: req.body.courseId
+        courseId: req.body.courseId,
       };
 
       if (req.body.filter === 'student') {
         queries = {
           ...queries,
           studentId: {
-            [Op.not]: null
-          }
+            [Op.not]: null,
+          },
         };
       }
 
@@ -168,16 +167,16 @@ class user {
         queries = {
           ...queries,
           studentId: {
-            [Op.is]: null
-          }
+            [Op.is]: null,
+          },
         };
       }
 
       const usersCourses = await UsersCourses.findAll({
         attributes: ['courseId', 'teacherId', 'subTeacherId', 'studentId'],
         where: queries,
-        raw: true
-      })
+        raw: true,
+      });
 
       var teachers = [];
       var students = [];
@@ -186,32 +185,35 @@ class user {
         students = await User.findAll({
           attributes: ['id', 'name', 'mail'],
           where: {
-            id: usersCourses.map(obj => obj.studentId).filter(obj => obj != null)
+            id: usersCourses
+              .map((obj) => obj.studentId)
+              .filter((obj) => obj != null),
           },
-          raw: true
-        })
-        students = students.map(student => {
+          raw: true,
+        });
+        students = students.map((student) => {
           return {
             ...student,
-            isTeacher: false
-          }
+            isTeacher: false,
+          };
         });
       }
-      const teacherIds = usersCourses.map(obj => obj.subTeacherId)
-        .concat([usersCourses[0].teacherId]);//add main teacher
+      const teacherIds = usersCourses
+        .map((obj) => obj.subTeacherId)
+        .concat([usersCourses[0]?.teacherId]); //add main teacher
       if (req.body.filter === 'teacher' || !req.body.filter) {
         teachers = await User.findAll({
           attributes: ['id', 'name', 'mail'],
           where: {
-            id: teacherIds.filter(obj => obj != null)
+            id: teacherIds.filter((obj) => obj != null),
           },
-          raw: true
-        })
-        teachers = teachers.map(teacher => {
+          raw: true,
+        });
+        teachers = teachers.map((teacher) => {
           return {
             ...teacher,
-            isTeacher: true
-          }
+            isTeacher: true,
+          };
         });
       }
 
@@ -220,13 +222,13 @@ class user {
       console.log(error);
       res.status(500).send({ message: 'Server Error!' });
     }
-  }
+  };
 
   static mapStudentIdToAccount = async (req, res, next) => {
     try {
       const user = await User.findOne({
         where: { id: req.user.id },
-        attributes: ['id', 'student_id']
+        attributes: ['id', 'student_id'],
       });
 
       if (!user) {
@@ -245,7 +247,7 @@ class user {
       }
       const updatedUser = await User.update(req.body, {
         where: {
-          id: req.user.id
+          id: req.user.id,
         },
         returning: true,
         plain: true,
@@ -255,7 +257,37 @@ class user {
       console.log(error);
       res.status(500).send({ message: 'Server Error!' });
     }
-  }
+  };
+
+  static update = async (req, res) => {
+    // Validate Request
+    if (!req.body) {
+      res.status(400).send({
+        message: 'Content can not be empty!',
+      });
+    }
+    try {
+      const user = await User.update(req.body, {
+        where: {
+          id: req.user.id,
+        },
+        returning: true, //<<<<< To return back updated record instead of success value
+        plain: true, // <<<< To return object itself, not return other messy data
+      });
+      if (user) {
+        const { password, ...rest } = user[1]?.dataValues;
+        res.send(rest); //<<< to get actual object
+      } else {
+        res.status(404).send({
+          message: `Not found User with id ${req.user.id}.`,
+        });
+      }
+    } catch (error) {
+      res.status(500).send({
+        message: 'Error updating User with id ' + req.user.id,
+      });
+    }
+  };
 }
 
 export default user;

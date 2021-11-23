@@ -12,35 +12,35 @@ import { Op } from 'sequelize';
 class course {
   static create = async (req, res) => {
     // Validate request
-    try {
-      if (!req.body) {
-        res.status(400).send({
-          message: 'Content can not be empty!',
-        });
-      }
-
-      // Create a Course
-      const course = {
-        name: req.body.name,
-        subject: req.body.subject,
-        image: req.body.image,
-        description: req.body.description,
-        createdAt: Date(),
-        updatedAt: Date(),
-      };
-
-      // Save Course in the database
-      const newRecord = await Course.create(course);
-
-      const newUsersCourses = {
-        courseId: newRecord.id,
-        teacherId: req.user.id,
-      };
-      await UsersCourses.create(newUsersCourses);
-      res.send(newRecord);
-    } catch (e) {
-      res.status(500).send(e);
+    if (!req.body) {
+      res.status(400).send({
+        message: 'Content can not be empty!',
+      });
     }
+
+    // Create a Course
+    const course = {
+      name: req.body.name,
+      subject: req.body.subject,
+      image: req.body.image,
+      description: req.body.description,
+      createdAt: Date(),
+      updatedAt: Date(),
+    };
+
+    // Create a Users Course
+    const newCourse = await Course.create(course);
+
+    const newUsersCourses = {
+      courseId: newCourse.dataValues.id,
+      teacherId: req.user.id,
+      createdAt: Date(),
+      updatedAt: Date(),
+    };
+    await UsersCourses.create(newUsersCourses);
+
+    // Save Course in the database
+    res.send(newCourse);
   };
 
   static findAllByUser = async (req, res) => {
@@ -249,7 +249,7 @@ class course {
         raw: true,
       });
       if (!user) {
-        res.status(400).send({ messsage: 'User does not exist' });
+        res.status(400).send({ messsage: 'This user did not register yet' });
         return;
       }
       const course = await Course.findByPk(courseId);
@@ -267,7 +267,9 @@ class course {
       });
 
       if (usersCourse) {
-        res.status(400).send({ messsage: 'User already joined this class' });
+        res
+          .status(400)
+          .send({ messsage: 'This user already joined this class' });
         return;
       }
 
@@ -293,7 +295,7 @@ class course {
         });
 
         if (!user) {
-          res.status(400).send({ messsage: 'User doesn not exist' });
+          res.status(400).send({ messsage: 'This user does not exist' });
           return;
         }
 
@@ -305,7 +307,9 @@ class course {
         });
 
         if (usersCourse) {
-          res.status(400).send({ messsage: 'User already joined this class' });
+          res
+            .status(400)
+            .send({ messsage: 'This user already joined this class' });
           return;
         }
         var newUsersCourses = {
@@ -326,6 +330,9 @@ class course {
 
         const userCourses = await UsersCourses.create(newUsersCourses);
 
+        res.redirect(
+          'https://classroom-manager.netlify.app/course/' + userCourses.courseId
+        );
         res.send(userCourses);
       }
     } catch (error) {
@@ -349,7 +356,7 @@ class course {
         });
 
         if (!user) {
-          res.status(400).send({ messsage: 'User doesn not exist' });
+          res.status(400).send({ messsage: 'This user did not register yet' });
           return;
         }
         const usersCourse = await UsersCourses.findOne({
@@ -360,7 +367,9 @@ class course {
         });
 
         if (usersCourse) {
-          res.status(400).send({ messsage: 'User already joined this class' });
+          res
+            .status(400)
+            .send({ messsage: 'This user already joined this class' });
           return;
         }
 
