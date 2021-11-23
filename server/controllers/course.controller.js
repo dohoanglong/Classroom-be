@@ -143,19 +143,20 @@ class course {
         res.send(course);
       } else {
         res.status(404).send({
-          message: `Not found Course with id ${req.params.courseId}.`,
+          message: `Not found course with id ${req.params.courseId}.`,
         });
       }
     } catch (error) {
       console.log(error);
       res.status(500).send({
-        message: 'Error retrieving Course with id ' + req.params.courseId,
+        message: 'Error retrieving course with id ' + req.params.courseId,
       });
     }
   };
 
   // Update a Course identified by the courseId in the request
   static update = async (req, res) => {
+    const {id:userId,email:userEmail} = req.user;
     // Validate Request
     if (!req.body) {
       res.status(400).send({
@@ -163,6 +164,23 @@ class course {
       });
     }
     try {
+      const userCourse = await UsersCourses.findAll({
+        where: {
+          courseId: req.body.id,
+          [Op.or]: [
+            { teacherId: userId },
+            { subTeacherId: userId }
+          ]
+        },
+        raw: true
+      });
+
+      if(!userCourse.length) {
+        res.status(400).send({ messsage: 'Only teachers are allowed to edit' });
+        return;
+      }
+
+
       const course = await Course.update(req.body, {
         where: {
           id: req.body.id,
@@ -237,19 +255,41 @@ class course {
   static sendInvitationLink = async (req, res) => {
     try {
       const { email, courseId } = req.body;
+      const {id:userId,email:userEmail} = req.user;
 
-      const user = await User.findOne({
+      if(userEmail===email) {
+        res.status(400).send({ messsage: 'You already in this class' });
+        return;
+      }
+
+      const userCourse = await UsersCourses.findAll({
+        where: {
+          courseId: courseId,
+          [Op.or]: [
+            { teacherId: userId },
+            { subTeacherId: userId }
+          ]
+        },
+        raw: true
+      });
+
+      if(!userCourse.length) {
+        res.status(400).send({ messsage: 'You are not teacher of this class' });
+        return;
+      }
+
+      const targetUser = await User.findOne({
         where: {
           mail: email
         },
         raw: true
       });
-      if (!user) {
+      if (!targetUser) {
         res.status(400).send({ messsage: 'This user did not register yet' });
         return;
       }
       const course = await Course.findByPk(courseId);
-      console.log(course);
+
       if (!course) {
         res.status(400).send({ messsage: 'Class does not exist' });
         return;
@@ -258,7 +298,7 @@ class course {
       const usersCourse = await UsersCourses.findOne({
         where: {
           courseId: courseId,
-          studentId: user.id
+          studentId: targetUser.id
         }
       });
 
@@ -355,7 +395,9 @@ class course {
         const usersCourse = await UsersCourses.findOne({
           where: {
             courseId: verifiedJwt.courseId,
-            studentId: user.id
+            [Op.or]: {
+              studentId: user.id
+            }
           }
         });
 
@@ -384,6 +426,34 @@ class course {
 
   static createInvitationLink = async (req, res) => {
     try {
+      const { courseId } = req.body;
+      const {id:userId} = req.user;
+
+      const course = await Course.findAll({
+        where: {id: courseId}
+      })
+
+      if(!course) {
+        res.status(400).send({message: 'Course does not exist!'});
+        return;
+      }
+
+      const userCourse = await UsersCourses.findAll({
+        where: {
+          courseId: courseId,
+          [Op.or]: [
+            { teacherId: userId },
+            { subTeacherId: userId }
+          ]
+        },
+        raw: true
+      });
+
+      if(!userCourse.length) {
+        res.status(400).send({ messsage: 'You are not teacher of this class' });
+        return;
+      }
+
       const invitationLink = await generateInvitationLink(req.body);
       res.send({ invitationLink });
     } catch (error) {

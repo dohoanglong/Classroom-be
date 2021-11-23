@@ -4,26 +4,33 @@ import passport from 'passport';
 var router = express.Router();
 // Create a new Course
 
+//To validate request joinning class by email link if validated -> get user into class
 router.get("/joinClass", Courses.validateJoinningRequestByEmail);
+
+//To validate request joinning class by invitation link if validated -> get user into classs
 router.get("/joinClassByLink",passport.authenticate('jwt', { session: false }), Courses.validateJoinningRequestByLink);
+
+//To restore soft-deleted class
 router.post('/restore/:courseId',Courses.restore);
+
+//create course, user who created will become teacher of that course
 router.post("/",passport.authenticate('jwt', { session: false }), Courses.create);
 
-//send invitation link via email
-router.post("/sendInvitation", Courses.sendInvitationLink);
+//send invitation link via email (only teachers and subteacher of class can invite users)
+router.post("/sendInvitation",passport.authenticate('jwt', { session: false }), Courses.sendInvitationLink);
 
-//create invitation link, everyone who clicked is able to join class
-router.post("/createInvitationLink", Courses.createInvitationLink);
+//create invitation link, everyone who clicked is able to join class (only teachers and subteacher of class can invite users)
+router.post("/createInvitationLink",passport.authenticate('jwt', { session: false }), Courses.createInvitationLink);
 
 
 // Retrieve all Courses of a specific user
 router.get("/",passport.authenticate('jwt', { session: false }),  Courses.findAllByUser);
 
 // Retrieve a single Course with courseId
-router.get("/:courseId", Courses.findOne);
+router.get("/:courseId",passport.authenticate('jwt', { session: false }), Courses.findOne);
 
 // Update a Course with courseId
-router.put("/", Courses.update);
+router.put("/",passport.authenticate('jwt', { session: false }), Courses.update);
 
 // Delete a Course with courseId
 router.delete("/:courseId", Courses.delete);
