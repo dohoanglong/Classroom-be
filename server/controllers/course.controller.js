@@ -12,31 +12,40 @@ import { Op } from 'sequelize';
 class course {
   static create = async (req, res) => {
     // Validate request
+    try {
+      if (!req.body) {
+        res.status(400).send({
+          message: 'Content can not be empty!',
+        });
+      }
 
-    if (!req.body) {
-      res.status(400).send({
-        message: 'Content can not be empty!',
-      });
+      // Create a Course
+      const course = {
+        name: req.body.name,
+        subject: req.body.subject,
+        image: req.body.image,
+        description: req.body.description,
+        createdAt: Date(),
+        updatedAt: Date(),
+      };
+
+      // Save Course in the database
+      const newRecord = await Course.create(course);
+
+      const newUsersCourses = {
+        courseId: newRecord.id,
+        teacherId: req.user.id,
+      };
+      await UsersCourses.create(newUsersCourses);
+      res.send(newRecord);
+    } catch (e) {
+      res.status(500).send(e);
     }
-    // Create a Course
-    const course = {
-      name: req.body.name,
-      subject: req.body.subject,
-      image: req.body.image,
-      description: req.body.description,
-      teacherId: req.user.id,
-      createdAt: Date(),
-      updatedAt: Date(),
-    };
-
-    // Save Course in the database
-    const newRecord = await Course.create(course);
-    res.status(200).send(newRecord);
   };
 
   static findAllByUser = async (req, res) => {
     try {
-      const courseIdsAsRoleTeacher = await UsersCourses.findAll({
+      const userCoursesAsRoleTeacher = await UsersCourses.findAll({
         attributes: ['courseId', 'teacherId'],
         group: ['courseId', 'teacherId'],
         where: {
@@ -45,7 +54,7 @@ class course {
         raw: true,
       });
 
-      const courseIdsAsRoleStudent = await UsersCourses.findAll({
+      const userCoursesAsRoleStudent = await UsersCourses.findAll({
         attributes: ['courseId', 'teacherId'],
         group: ['courseId', 'teacherId'],
         where: {
@@ -54,36 +63,38 @@ class course {
         raw: true,
       });
 
-      var coursesAsRoleTeacher = await Course.findAll({
+      var coursesAsRoleTeacher = [];
+      coursesAsRoleTeacher = await Course.findAll({
         where: {
           id: {
-            [Op.or]: courseIdsAsRoleTeacher.map((arr) => arr.courseId),
+            [Op.in]: userCoursesAsRoleTeacher.map((arr) => arr.courseId),
           },
         },
         raw: true,
       });
 
-      var coursesAsRoleStudent = await Course.findAll({
+      var coursesAsRoleStudent = [];
+      coursesAsRoleStudent = await Course.findAll({
         where: {
           id: {
-            [Op.or]: courseIdsAsRoleStudent.map((arr) => arr.courseId),
+            [Op.in]: userCoursesAsRoleStudent.map((arr) => arr.courseId),
           },
         },
         raw: true,
       });
 
-      const teacherAtAllCourses = await User.findAll({
+      const teachers = await User.findAll({
         attributes: ['id', 'name'],
         where: {
           [Op.or]: [
             {
               id: {
-                [Op.or]: courseIdsAsRoleTeacher.map((arr) => arr.teacherId),
+                [Op.in]: userCoursesAsRoleTeacher.map((arr) => arr.teacherId),
               },
             },
             {
               id: {
-                [Op.or]: courseIdsAsRoleStudent.map((arr) => arr.teacherId),
+                [Op.in]: userCoursesAsRoleStudent.map((arr) => arr.teacherId),
               },
             },
           ],
@@ -92,12 +103,10 @@ class course {
       });
 
       coursesAsRoleTeacher = coursesAsRoleTeacher.map((obj) => {
-        const teacherId = courseIdsAsRoleTeacher.find(
+        const teacherId = userCoursesAsRoleTeacher.find(
           (course) => (course.courseId = obj.id)
         ).teacherId;
-        const teacher = teacherAtAllCourses.find(
-          (teacher) => teacher.id === teacherId
-        );
+        const teacher = teachers.find((teacher) => teacher.id === teacherId);
         return {
           ...obj,
           teacherName: teacher.name,
@@ -106,12 +115,10 @@ class course {
       });
 
       coursesAsRoleStudent = coursesAsRoleStudent.map((obj) => {
-        const teacherId = courseIdsAsRoleStudent.find(
-          (course) => course.courseId === obj.id
+        const teacherId = userCoursesAsRoleStudent.find(
+          (course) => (course.courseId = obj.id)
         ).teacherId;
-        const teacher = teacherAtAllCourses.find(
-          (teacher) => teacher.id === teacherId
-        );
+        const teacher = teachers.find((teacher) => teacher.id === teacherId);
         return {
           ...obj,
           teacherName: teacher.name,
@@ -120,7 +127,7 @@ class course {
       });
 
       const returnObject = {
-        courseList: coursesAsRoleTeacher.concat(coursesAsRoleStudent),
+        courses: coursesAsRoleStudent.concat(coursesAsRoleTeacher),
       };
 
       res.send(returnObject);
