@@ -382,11 +382,9 @@ class course {
         }
 
         const userCourses = await UsersCourses.create(newUsersCourses);
-
         res.redirect(
           'https://classroom-manager.netlify.app/course/' + userCourses.courseId
         );
-        res.send(userCourses);
       }
     } catch (error) {
       console.log(error);
