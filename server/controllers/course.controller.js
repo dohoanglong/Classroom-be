@@ -387,7 +387,7 @@ class course {
         //   'https://classroom-manager.netlify.app/course/' + userCourses.courseId
         // );
         res.redirect(
-          'https://classroom-manager.netlify.app/course/' + userCourses.courseId
+          'http://127.0.0.1:3000/course/' + userCourses.courseId
         );
       }
     } catch (error) {
@@ -463,7 +463,7 @@ class course {
         //   'https://classroom-manager.netlify.app/course/' + userCourses.courseId
         // );
         res.redirect(
-          'https://classroom-manager.netlify.app/course/' + userCourses.courseId
+          'http://127.0.0.1:3000/course/' + userCourses.courseId
         );
         // res.send(userCourses);
       }
