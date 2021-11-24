@@ -142,7 +142,7 @@ class course {
     try {
       var course = await Course.findOne({
         where: { id: req.params.courseId },
-        raw: true
+        raw: true,
       });
 
       const userCourse = await UsersCourses.findAll({
@@ -157,13 +157,13 @@ class course {
         if (userCourse.length) {
           course = {
             ...course,
-            isTeacher: true
-          }
+            isTeacher: true,
+          };
         } else {
           course = {
             ...course,
-            isTeacher: false
-          }
+            isTeacher: false,
+          };
         }
         res.send(course);
       } else {
@@ -404,12 +404,12 @@ class course {
       const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY_JOINCLASS);
 
       const course = await Course.findOne({
-        attributes:['id','name','subject','description'],
+        attributes: ['id', 'name', 'subject', 'description'],
         where: {
-          id: decoded.courseId
+          id: decoded.courseId,
         },
-        raw: true
-      })
+        raw: true,
+      });
 
       res.send(course);
     } catch (error) {
@@ -418,7 +418,7 @@ class course {
         message: 'Server error',
       });
     }
-  }
+  };
 
   static validateJoinningRequestByLink = async (req, res) => {
     try {
@@ -447,7 +447,7 @@ class course {
 
         if (usersCourse) {
           res
-            .status(400)
+            .status(200)
             .send({ messsage: 'This user already joined this class' });
           return;
         }
@@ -462,9 +462,10 @@ class course {
         // res.redirect(
         //   'https://classroom-manager.netlify.app/course/' + userCourses.courseId
         // );
-        res.redirect(
-          'https://classroom-manager.netlify.app/course/' + userCourses.courseId
-        );
+        // res.redirect(
+        //   'https://classroom-manager.netlify.app/course/' + userCourses.courseId
+        // );
+        res.status(200).send('ok');
         // res.send(userCourses);
       }
     } catch (error) {
