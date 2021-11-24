@@ -183,7 +183,7 @@ class user {
 
       if (req.body.filter === 'student' || !req.body.filter) {
         students = await User.findAll({
-          attributes: ['id', 'name', 'mail'],
+          attributes: ['id', 'name', 'mail','studentId'],
           where: {
             id: usersCourses
               .map((obj) => obj.studentId)
