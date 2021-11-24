@@ -39,8 +39,7 @@
     "passport-local": "^1.0.0",
     "pg": "^8.7.1",
     "prettylink": "^1.0.0",
-    "sequelize": "^6.9.0",
-    "win-node-env": "^0.4.0"
+    "sequelize": "^6.9.0"
   },
   "babel": {
     "presets": [
