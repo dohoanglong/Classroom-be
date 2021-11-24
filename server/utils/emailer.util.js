@@ -6,7 +6,8 @@ const adminEmail = 'emailsenderfromhcmus@gmail.com'
 const adminPassword = 'adminAdm1n'
 const mailHost = 'smtp.gmail.com'
 const mailPort = 465
-const localHost = 'http://127.0.0.1:8080'
+const localHost = 'http://127.0.0.1:3000'
+
 
 const transporter = nodeMailer.createTransport({
     auth: {

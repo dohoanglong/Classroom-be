@@ -383,6 +383,9 @@ class course {
         }
 
         const userCourses = await UsersCourses.create(newUsersCourses);
+        // res.redirect(
+        //   'https://classroom-manager.netlify.app/course/' + userCourses.courseId
+        // );
         res.redirect(
           'https://classroom-manager.netlify.app/course/' + userCourses.courseId
         );
@@ -456,8 +459,13 @@ class course {
         };
 
         const userCourses = await UsersCourses.create(newUsersCourses);
-
-        res.send(userCourses);
+        // res.redirect(
+        //   'https://classroom-manager.netlify.app/course/' + userCourses.courseId
+        // );
+        res.redirect(
+          'https://classroom-manager.netlify.app/course/' + userCourses.courseId
+        );
+        // res.send(userCourses);
       }
     } catch (error) {
       console.log(error);
