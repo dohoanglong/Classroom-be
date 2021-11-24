@@ -52,6 +52,12 @@ router.get(
   Courses.findOne
 );
 
+router.get(
+  '/courseInfoFromToken/:token',
+  passport.authenticate('jwt', { session: false }),
+  Courses.getCourseInfoFromToken
+);
+
 // Update a Course with courseId
 router.put(
   '/',

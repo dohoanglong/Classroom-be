@@ -1,6 +1,7 @@
 import Course from '../models/course.model';
 import User from '../models/user.model';
 import UsersCourses from '../models/usersCourses.model';
+import jwt from 'jsonwebtoken';
 import {
   sendInvitationLink,
   validateInvitationLink,
@@ -393,6 +394,28 @@ class course {
       });
     }
   };
+
+  static getCourseInfoFromToken = async (req, res) => {
+    try {
+      const token = req.params.token;
+      const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY_JOINCLASS);
+
+      const course = await Course.findOne({
+        attributes:['id','name','subject','description'],
+        where: {
+          id: decoded.courseId
+        },
+        raw: true
+      })
+
+      res.send(course);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({
+        message: 'Server error',
+      });
+    }
+  }
 
   static validateJoinningRequestByLink = async (req, res) => {
     try {
