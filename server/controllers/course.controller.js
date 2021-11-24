@@ -386,9 +386,10 @@ class course {
         // res.redirect(
         //   'https://classroom-manager.netlify.app/course/' + userCourses.courseId
         // );
-        res.redirect(
-          'http://127.0.0.1:3000/course/' + userCourses.courseId
-        );
+        // res.redirect(
+        //   'http://127.0.0.1:3000/course/' + userCourses.courseId
+        // );
+        res.status(200).send(userCourses);
       }
     } catch (error) {
       console.log(error);
@@ -462,10 +463,10 @@ class course {
         // res.redirect(
         //   'https://classroom-manager.netlify.app/course/' + userCourses.courseId
         // );
-        res.redirect(
-          'http://127.0.0.1:3000/course/' + userCourses.courseId
-        );
-        // res.send(userCourses);
+        // res.redirect(
+        //   'http://127.0.0.1:3000/course/' + userCourses.courseId
+        // );
+         res.status(200).send(userCourses);
       }
     } catch (error) {
       console.log(error);
