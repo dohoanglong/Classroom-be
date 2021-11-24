@@ -39,7 +39,8 @@
     "passport-local": "^1.0.0",
     "pg": "^8.7.1",
     "prettylink": "^1.0.0",
-    "sequelize": "^6.9.0"
+    "sequelize": "^6.9.0",
+    "win-node-env": "^0.4.0"
   },
   "babel": {
     "presets": [
@@ -78,7 +79,6 @@
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-runtime": "^6.26.0",
     "rimraf": "^3.0.2",
-    "sequelize-cli": "^6.3.0",
-    "win-node-env": "^0.4.0"
+    "sequelize-cli": "^6.3.0"
   }
 }
