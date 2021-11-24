@@ -8,7 +8,7 @@ class user {
   static create = async (req, res, next, isFromSocial = false) => {
     try {
       if (!req.body) {
-        res.status(400).send({
+        res.status(200).send({
           message: 'Content can not be empty!',
         });
       }
@@ -17,7 +17,7 @@ class user {
 
       if (user) {
         res
-          .status(400)
+          .status(200)
           .send({ message: 'Existed mail', result: 0, content: null });
       }
       // Create a User
@@ -55,13 +55,13 @@ class user {
       const user = await User.findOne({ where: { mail: req.body.mail } });
       if (!isFromSocial) {
         if (!user)
-          res.status(400).send({
+          res.status(200).send({
             message: 'Non existed mail',
             result: 0,
             content: null,
           });
         if (user.password !== req.body.password) {
-          res.status(400).send({
+          res.status(200).send({
             message: 'Wrong password',
             result: 0,
             content: null,
@@ -102,7 +102,7 @@ class user {
         if (!user) this.create(req, res, next, true);
         else this.findOne(req, res, next, true);
       } else {
-        res.status(400).send({
+        res.status(200).send({
           message: 'Invalid token ',
         });
       }
@@ -183,7 +183,7 @@ class user {
 
       if (req.body.filter === 'student' || !req.body.filter) {
         students = await User.findAll({
-          attributes: ['id', 'name', 'mail'],
+          attributes: ['id', 'name', 'mail','studentId'],
           where: {
             id: usersCourses
               .map((obj) => obj.studentId)
@@ -232,7 +232,7 @@ class user {
       });
 
       if (!user) {
-        res.status(400).send({
+        res.status(200).send({
           message: 'User does not exist',
         });
         return;
@@ -240,7 +240,7 @@ class user {
 
       console.log(user);
       if (user.dataValues.student_id) {
-        res.status(400).send({
+        res.status(200).send({
           message: 'Student Id is already taken',
         });
         return;
@@ -262,7 +262,7 @@ class user {
   static update = async (req, res) => {
     // Validate Request
     if (!req.body) {
-      res.status(400).send({
+      res.status(200).send({
         message: 'Content can not be empty!',
       });
     }

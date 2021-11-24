@@ -14,7 +14,7 @@ class course {
   static create = async (req, res) => {
     // Validate request
     if (!req.body) {
-      res.status(400).send({
+      res.status(200).send({
         message: 'Content can not be empty!',
       });
     }
@@ -184,7 +184,7 @@ class course {
     const { id: userId, email: userEmail } = req.user;
     // Validate Request
     if (!req.body) {
-      res.status(400).send({
+      res.status(200).send({
         message: 'Content can not be empty!',
       });
     }
@@ -198,7 +198,7 @@ class course {
       });
 
       if (!userCourse.length) {
-        res.status(400).send({ messsage: 'Only teachers are allowed to edit' });
+        res.status(200).send({ messsage: 'Only teachers are allowed to edit' });
         return;
       }
 
@@ -260,7 +260,7 @@ class course {
         paranoid: false,
       });
       if (!course) {
-        res.status(400).send({ messsage: 'Course does not exist' });
+        res.status(200).send({ messsage: 'Course does not exist' });
         return;
       }
       course.restore();
@@ -279,7 +279,7 @@ class course {
       const { id: userId, email: userEmail } = req.user;
 
       if (userEmail === email) {
-        res.status(400).send({ messsage: 'You already in this class' });
+        res.status(200).send({ messsage: 'You already in this class' });
         return;
       }
 
@@ -292,7 +292,7 @@ class course {
       });
 
       if (!userCourse.length) {
-        res.status(400).send({ messsage: 'You are not teacher of this class' });
+        res.status(200).send({ messsage: 'You are not teacher of this class' });
         return;
       }
 
@@ -303,13 +303,13 @@ class course {
         raw: true,
       });
       if (!targetUser) {
-        res.status(400).send({ messsage: 'This user did not register yet' });
+        res.status(200).send({ messsage: 'This user did not register yet' });
         return;
       }
       const course = await Course.findByPk(courseId);
 
       if (!course) {
-        res.status(400).send({ messsage: 'Class does not exist' });
+        res.status(200).send({ messsage: 'Class does not exist' });
         return;
       }
 
@@ -322,7 +322,7 @@ class course {
 
       if (usersCourse) {
         res
-          .status(400)
+          .status(200)
           .send({ messsage: 'This user already joined this class' });
         return;
       }
@@ -349,7 +349,7 @@ class course {
         });
 
         if (!user) {
-          res.status(400).send({ messsage: 'This user does not exist' });
+          res.status(200).send({ messsage: 'This user does not exist' });
           return;
         }
 
@@ -362,7 +362,7 @@ class course {
 
         if (usersCourse) {
           res
-            .status(400)
+            .status(200)
             .send({ messsage: 'This user already joined this class' });
           return;
         }
@@ -386,9 +386,10 @@ class course {
         // res.redirect(
         //   'https://classroom-manager.netlify.app/course/' + userCourses.courseId
         // );
-        res.redirect(
-          'https://classroom-manager.netlify.app/course/' + userCourses.courseId
-        );
+        // res.redirect(
+        //   'http://127.0.0.1:3000/course/' + userCourses.courseId
+        // );
+        res.status(200).send(userCourses);
       }
     } catch (error) {
       console.log(error);
@@ -433,7 +434,7 @@ class course {
         });
 
         if (!user) {
-          res.status(400).send({ messsage: 'This user did not register yet' });
+          res.status(200).send({ messsage: 'This user did not register yet' });
           return;
         }
         const usersCourse = await UsersCourses.findOne({
@@ -463,10 +464,9 @@ class course {
         //   'https://classroom-manager.netlify.app/course/' + userCourses.courseId
         // );
         // res.redirect(
-        //   'https://classroom-manager.netlify.app/course/' + userCourses.courseId
+        //   'http://127.0.0.1:3000/course/' + userCourses.courseId
         // );
-        res.status(200).send('ok');
-        // res.send(userCourses);
+        res.status(200).send(userCourses);
       }
     } catch (error) {
       console.log(error);
@@ -486,7 +486,7 @@ class course {
       });
 
       if (!course) {
-        res.status(400).send({ message: 'Course does not exist!' });
+        res.status(200).send({ message: 'Course does not exist!' });
         return;
       }
 
@@ -499,7 +499,7 @@ class course {
       });
 
       if (!userCourse.length) {
-        res.status(400).send({ messsage: 'You are not teacher of this class' });
+        res.status(200).send({ messsage: 'You are not teacher of this class' });
         return;
       }
 
