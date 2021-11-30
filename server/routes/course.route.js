@@ -14,15 +14,28 @@ router.get(
   Courses.validateJoinningRequestByLink
 );
 
+router.get(
+  '/getGradeStructure/:courseId',
+  passport.authenticate('jwt', { session: false }),
+  Courses.getGradeStructure
+);
+
+router.post(
+  '/updateGradeStructure',
+  passport.authenticate('jwt', { session: false }),
+  Courses.updateGradeStructure
+);
+
 //To restore soft-deleted class
 router.post('/restore/:courseId', Courses.restore);
-
 //create course, user who created will become teacher of that course
 router.post(
   '/',
   passport.authenticate('jwt', { session: false }),
   Courses.create
 );
+
+
 
 //send invitation link via email (only teachers and subteacher of class can invite users)
 router.post(
@@ -37,6 +50,8 @@ router.post(
   passport.authenticate('jwt', { session: false }),
   Courses.createInvitationLink
 );
+
+
 
 // Retrieve all Courses of a specific user
 router.get(

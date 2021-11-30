@@ -28,6 +28,10 @@ var Course = sequelize.define(
       type: Sequelize.STRING,
       field: 'description',
     },
+    gradeStructure: {
+      type: Sequelize.STRING(99999),
+      field: 'grade_structure',
+    },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE,

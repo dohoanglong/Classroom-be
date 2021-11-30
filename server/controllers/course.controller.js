@@ -512,6 +512,91 @@ class course {
       });
     }
   };
+
+  static updateGradeStructure= async (req, res)=> {
+    const { courseId, gradeStructure } = req.body;
+    const { id: userId } = req.user;
+
+    const strGradeStructure = JSON.stringify(gradeStructure);
+
+    try {
+      const userCourse = await UsersCourses.findAll({
+        where: {
+          courseId: courseId,
+          [Op.or]: [{ teacherId: userId }, { subTeacherId: userId }],
+        },
+        raw: true,
+      });
+
+      if (!userCourse.length) {
+        res.status(200).send({ messsage: 'Only teachers are allowed to edit grade structure' });
+        return;
+      }
+
+
+
+      const course = await Course.update({ gradeStructure: strGradeStructure }, {
+        where: {
+          id: courseId,
+        },
+        returning: true, //<<<<< To return back updated record instead of success value
+        plain: true, // <<<< To return object itself, not return other messy data
+      });
+      if (course) {
+        res.send(course[1].dataValues); //<<< to get actual object
+      } else {
+        res.status(404).send({
+          message: `Not found Course with id ${req.body.id}.`,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({
+        message: 'Server error',
+      });
+    }
+  }
+
+  static getGradeStructure = async (req,res) => {
+    const { courseId} = req.params;
+    const { id: userId } = req.user;
+
+    try {
+      const userCourse = await UsersCourses.findAll({
+        where: {
+          courseId: courseId,
+          [Op.or]: [{ teacherId: userId }, { subTeacherId: userId }],
+        },
+        raw: true,
+      });
+
+      if (!userCourse.length) {
+        res.status(200).send({ messsage: 'Only teachers are allowed to view grade structure' });
+        return;
+      }
+
+      const course = await Course.findOne({
+        where: {
+          id: courseId
+        },
+        raw: true
+      })
+
+      if(!course) {
+        res.status(200).send({ messsage: 'Cannot find class' });
+        return;
+      }
+
+      const gradeStructure = JSON.parse(course.gradeStructure);
+      res.status(200).send(gradeStructure ? gradeStructure : {message:  'This class have not had the grade structure'});
+
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({
+        message: 'Server error',
+      });
+    }
+  }
 }
 
 export default course;
