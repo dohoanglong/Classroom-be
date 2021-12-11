@@ -1,5 +1,6 @@
 import sequelize from './db.js';
 import { Sequelize } from 'sequelize';
+import UsersCourses from './usersCourses.model.js';
 
 var Course = sequelize.define(
   'course',
@@ -48,4 +49,28 @@ var Course = sequelize.define(
     paranoid: true, // <<< Apply soft-deleted record
   }
 );
+
+Course.findCoursesByUserId = async (userId) => {
+  const selectQuery = `
+  SELECT distinct(course.id, users_courses.teacher_id),
+      course.*,
+      (CASE
+          WHEN ?= users_courses.student_id THEN 'student'
+          WHEN ? = users_courses.teacher_id THEN 'teacher'
+          WHEN ? = users_courses.subteacher_id THEN 'sub-teacher'
+      END) AS ROLE
+  FROM users_courses
+  JOIN course 
+      ON course.id = users_courses.course_id
+  WHERE users_courses.student_id=?
+      OR users_courses.subteacher_id=?
+      OR users_courses.teacher_id=?`;  
+
+  return await sequelize.query(selectQuery, {
+    replacements: Array(6).fill(userId),
+    model: UsersCourses,
+    mapToModel: true,
+    raw: true
+  });
+}
 export default Course;

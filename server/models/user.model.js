@@ -1,6 +1,7 @@
 import sequelize from './db.js';
 import bcrypt from 'bcrypt';
 import { Sequelize } from 'sequelize';
+import UsersCourses from './usersCourses.model.js';
 
 var User = sequelize.define(
   'account',
@@ -60,5 +61,29 @@ User.generateHash = (password) => {
 User.isValidPassword = (password, currentPassword) => {
   return bcrypt.compare(password, currentPassword);
 };
+
+User.getUsersInClass = async (courseId) => {
+  const selectQuery = `
+  SELECT distinct(account.id, users_courses.course_id, account.name, account.mail),
+        account.id,
+        users_courses.course_id,
+        account.name,
+        account.mail,
+        (CASE WHEN account.id = users_courses.student_id THEN 'student'
+              WHEN account.id = users_courses.teacher_id THEN 'teacher'
+              WHEN account.id = users_courses.subteacher_id THEN 'sub-teacher' END) AS role
+  FROM users_courses
+        JOIN account ON account.id = users_courses.teacher_id
+        OR account.id = users_courses.subteacher_id
+        OR account.id = users_courses.student_id
+  WHERE course_id= ?`;  
+
+  return await sequelize.query(selectQuery, {
+    replacements: [courseId],
+    model: UsersCourses,
+    mapToModel: true,
+    raw: true
+  });
+}
 
 export default User;

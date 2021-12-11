@@ -3,13 +3,6 @@ import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
 dotenv.config();
 
-// Create a connection to the database
-const databaseConfig = {
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-};
 
 var sequelize = new Sequelize({
   database: process.env.DB,
@@ -19,14 +12,14 @@ var sequelize = new Sequelize({
   port: process.env.DATABASE_PORT,
   dialect: 'postgres',
   dialectOptions: {
-    ssl: {
+    ssl: {   
       require: true,
-      rejectUnauthorized: false, // <<<<<<< YOU NEED THIS
+      rejectUnauthorized: false // <<<<<<< YOU NEED THIS
     },
   },
 });
-// const pool = new Pool(databaseConfig);
 
-const pool = new Pool(databaseConfig);
 
 export default sequelize;
+
+

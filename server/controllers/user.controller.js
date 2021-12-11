@@ -150,74 +150,13 @@ class user {
 
   static getUserInClass = async (req, res) => {
     try {
-      var queries = {
-        courseId: req.body.courseId,
-      };
+      var users = await User.getUsersInClass(req.body.courseId);
+      const filter = req.body.filter;
 
-      if (req.body.filter === 'student') {
-        queries = {
-          ...queries,
-          studentId: {
-            [Op.not]: null,
-          },
-        };
-      }
+      //filter by role and exclude distinct cloumn 
+      users = users.reduce((filtered, { row, ...newUser }) => newUser.role === filter ? (filtered.push(newUser) && filtered) : filtered, []);
 
-      if (req.body.filter === 'teacher') {
-        queries = {
-          ...queries,
-          studentId: {
-            [Op.is]: null,
-          },
-        };
-      }
-
-      const usersCourses = await UsersCourses.findAll({
-        attributes: ['courseId', 'teacherId', 'subTeacherId', 'studentId'],
-        where: queries,
-        raw: true,
-      });
-
-      var teachers = [];
-      var students = [];
-
-      if (req.body.filter === 'student' || !req.body.filter) {
-        students = await User.findAll({
-          attributes: ['id', 'name', 'mail','studentId'],
-          where: {
-            id: usersCourses
-              .map((obj) => obj.studentId)
-              .filter((obj) => obj != null),
-          },
-          raw: true,
-        });
-        students = students.map((student) => {
-          return {
-            ...student,
-            isTeacher: false,
-          };
-        });
-      }
-      const teacherIds = usersCourses
-        .map((obj) => obj.subTeacherId)
-        .concat([usersCourses[0]?.teacherId]); //add main teacher
-      if (req.body.filter === 'teacher' || !req.body.filter) {
-        teachers = await User.findAll({
-          attributes: ['id', 'name', 'mail'],
-          where: {
-            id: teacherIds.filter((obj) => obj != null),
-          },
-          raw: true,
-        });
-        teachers = teachers.map((teacher) => {
-          return {
-            ...teacher,
-            isTeacher: true,
-          };
-        });
-      }
-
-      res.send({ users: teachers.concat(students) });
+      res.send({ users: users });
     } catch (error) {
       console.log(error);
       res.status(500).send({ message: 'Server Error!' });
