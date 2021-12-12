@@ -48,7 +48,7 @@ class course {
     try {
       const courses = await Course.findCoursesByUserId(req.user.id);
 
-      res.send(courses);
+      res.send({courses:courses});
     } catch (error) {
       console.log(error.message);
     }
