@@ -19,15 +19,18 @@ var UsersCourses = sequelize.define(
       allowNull: true,
       type: Sequelize.INTEGER,
       field: 'student_id',
+
     },
     teacherId: {
       type: Sequelize.INTEGER,
       field: 'teacher_id',
+
     },
     subTeacherId: {
       allowNull: true,
       type: Sequelize.INTEGER,
       field: 'subteacher_id',
+
     },
     createdAt: {
       allowNull: false,
@@ -45,4 +48,6 @@ var UsersCourses = sequelize.define(
     paranoid: true, // <<< Apply soft-deleted record
   }
 );
+
+
 export default UsersCourses;
