@@ -102,7 +102,7 @@ class CourseController {
 
     // Update a Course identified by the courseId in the request
     static update = async (req, res) => {
-        const { id: userId} = req.user
+        const { id: userId } = req.user
         // Validate Request
         if (!req.body) {
             res.status(200).send({
@@ -444,10 +444,10 @@ class CourseController {
     }
 
     static updateGradeStructure = async (req, res) => {
-        const { courseId, gradeStructure } = req.body
+        const { courseId, gradeStructure, maxIndex } = req.body
         const { id: userId } = req.user
 
-        const strGradeStructure = JSON.stringify(gradeStructure)
+        const strGradeStructure = JSON.stringify({ gradeStructure: gradeStructure, maxIndex: maxIndex });
 
         try {
             const userCourse = await UsersCourses.findAll({

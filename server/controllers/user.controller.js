@@ -221,8 +221,8 @@ class UserController {
                 returning: true, //<<<<< To return back updated record instead of success value
                 plain: true, // <<<< To return object itself, not return other messy data
             })
-            if (user) {
-                const { password, ...rest } = user[1]?.dataValues;
+            if (user && user[1]) {
+                const { password, ...rest } = user[1].dataValues;
                 res.send(rest) //<<< to get actual object
             } else {
                 res.status(404).send({

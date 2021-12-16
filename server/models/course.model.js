@@ -66,7 +66,7 @@ Course.findCoursesByUserId = async (userId) => {
       OR users_courses.subteacher_id=?
       OR users_courses.teacher_id=?`
 
-    return await sequelize.query(selectQuery, {
+    return sequelize.query(selectQuery, {
         replacements: Array(6).fill(userId),
         model: UsersCourses,
         mapToModel: true,
