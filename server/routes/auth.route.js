@@ -1,7 +1,7 @@
 import express from 'express'
 import passport from 'passport'
 var router = express.Router()
-import auth from '../controllers/auth.controller'
+import AuthController from '../controllers/auth.controller'
 
 router.post(
     '/register',
@@ -22,7 +22,7 @@ router.post(
             }
         )(req, res, next)
     },
-    auth.register
+    AuthController.register
 )
 
 router.post(
@@ -46,10 +46,10 @@ router.post(
             }
         )(req, res, next)
     },
-    auth.login
+    AuthController.login
 )
 
-router.post('/socialLogin', auth.socialLogin)
-router.get('/logout', auth.logout)
+router.post('/socialLogin', AuthController.socialLogin)
+router.get('/logout', AuthController.logout)
 
 export default router

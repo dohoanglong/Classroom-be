@@ -1,10 +1,8 @@
+/* eslint-disable no-unused-vars */
 import User from '../models/user.model'
 import { verifyFb, verifyGg } from '../helpers/auth'
-import { Op } from 'sequelize'
-import Course from '../models/course.model'
-import UsersCourses from '../models/usersCourses.model'
 
-class user {
+class UserController {
     static create = async (req, res, next, isFromSocial = false) => {
         try {
             if (!req.body) {
@@ -139,7 +137,7 @@ class user {
     //   }
     // };
 
-    static getUserDetail = async (req, res, next) => {
+    static getUserDetail = async (req, res) => {
         try {
             const user = await User.findOne({
                 where: { mail: req.user.email },
@@ -173,7 +171,7 @@ class user {
         }
     }
 
-    static mapStudentIdToAccount = async (req, res, next) => {
+    static mapStudentIdToAccount = async (req, res) => {
         try {
             const user = await User.findOne({
                 where: { id: req.user.id },
@@ -224,7 +222,7 @@ class user {
                 plain: true, // <<<< To return object itself, not return other messy data
             })
             if (user) {
-                const { password, ...rest } = user[1]?.dataValues
+                const { password, ...rest } = user[1]?.dataValues;
                 res.send(rest) //<<< to get actual object
             } else {
                 res.status(404).send({
@@ -239,4 +237,4 @@ class user {
     }
 }
 
-export default user
+export default UserController;

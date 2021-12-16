@@ -14,7 +14,8 @@
         "watch:dev": "set NODE_ENV=development & nodemon",
         "db:create": "sequelize-cli db:create",
         "debug": "npm start --debug",
-        "pretty": "prettier --write \"./**/*.{js,jsx,json}\""
+        "pretty": "prettier --write \"./**/*.{js,jsx,json}\"",
+        "lint": "eslint ./"
     },
     "dependencies": {
         "@babel/cli": "^7.16.0",
@@ -79,6 +80,7 @@
     "devDependencies": {
         "babel-plugin-transform-runtime": "^6.23.0",
         "babel-runtime": "^6.26.0",
+        "eslint": "^8.4.1",
         "rimraf": "^3.0.2",
         "sequelize-cli": "^6.3.0"
     }

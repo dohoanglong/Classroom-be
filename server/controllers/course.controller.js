@@ -10,7 +10,7 @@ import {
 import { Op } from 'sequelize'
 
 // Create and Save a new Course
-class course {
+class CourseController {
     static create = async (req, res) => {
         // Validate request
         if (!req.body) {
@@ -102,7 +102,7 @@ class course {
 
     // Update a Course identified by the courseId in the request
     static update = async (req, res) => {
-        const { id: userId, email: userEmail } = req.user
+        const { id: userId} = req.user
         // Validate Request
         if (!req.body) {
             res.status(200).send({
@@ -316,12 +316,7 @@ class course {
                 }
 
                 const userCourses = await UsersCourses.create(newUsersCourses)
-                // res.redirect(
-                //   'https://classroom-manager.netlify.app/course/' + userCourses.courseId
-                // );
-                // res.redirect(
-                //   'http://127.0.0.1:3000/course/' + userCourses.courseId
-                // );
+
                 res.status(200).send(userCourses)
             }
         } catch (error) {
@@ -398,12 +393,7 @@ class course {
                 }
 
                 const userCourses = await UsersCourses.create(newUsersCourses)
-                // res.redirect(
-                //   'https://classroom-manager.netlify.app/course/' + userCourses.courseId
-                // );
-                // res.redirect(
-                //   'http://127.0.0.1:3000/course/' + userCourses.courseId
-                // );
+
                 res.status(200).send(userCourses)
             }
         } catch (error) {
@@ -549,4 +539,4 @@ class course {
     }
 }
 
-export default course
+export default CourseController;

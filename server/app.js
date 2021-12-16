@@ -35,7 +35,7 @@ app.use('/auth', authRoute)
 app.use('/user', userRoute)
 app.use('/', indexRouter)
 
-app.use(function (err, req, res, next) {
+app.use(function (err, req, res) {
     console.error(err)
     res.status(500).send('Something broke!')
 })

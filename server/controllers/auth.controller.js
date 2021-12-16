@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken'
 import { verifyFb, verifyGg } from '../helpers/auth'
 import User from '../models/user.model'
 
-class auth {
+class AuthController {
     static register = async (req, res) => {
         res.status(200).json({
             message: 'Signup successful',
@@ -22,7 +22,7 @@ class auth {
         })
     }
 
-    static socialLogin = async (req, res, next) => {
+    static socialLogin = async (req, res) => {
         try {
             let data
             if (req.body.fbToken) {
@@ -70,8 +70,8 @@ class auth {
         }
 
         // Save User in the database
-        const newRecord = await User.create(newUser)
-        return newRecord
+        const newRecord = await User.create(newUser);
+        return newRecord;
     }
 
     static logout = async (req, res) => {
@@ -82,4 +82,4 @@ class auth {
     }
 }
 
-export default auth
+export default AuthController;

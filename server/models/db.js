@@ -1,4 +1,3 @@
-import { Pool } from 'pg'
 import { Sequelize } from 'sequelize'
 import dotenv from 'dotenv'
 dotenv.config()
@@ -11,10 +10,10 @@ var sequelize = new Sequelize({
     port: process.env.DATABASE_PORT,
     dialect: 'postgres',
     dialectOptions: {
-        ssl: {
-            require: true,
-            rejectUnauthorized: false, // <<<<<<< YOU NEED THIS
-        },
+        // ssl: {
+        //     require: true,
+        //     rejectUnauthorized: false, // <<<<<<< YOU NEED THIS
+        // },
     },
 })
 
