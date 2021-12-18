@@ -10,10 +10,10 @@ var sequelize = new Sequelize({
     port: process.env.DATABASE_PORT,
     dialect: 'postgres',
     dialectOptions: {
-        // ssl: {
-        //     require: true,
-        //     rejectUnauthorized: false, // <<<<<<< YOU NEED THIS
-        // },
+        ssl: {
+            require: true,
+            rejectUnauthorized: false, // <<<<<<< YOU NEED THIS
+        },
     },
 })
 
