@@ -1,9 +1,8 @@
 import sequelize from './db.js'
 import { Sequelize } from 'sequelize'
-import GradeItem from './gradeItem.model.js'
 
-var Grade = sequelize.define(
-    'grade',
+var GradeItem = sequelize.define(
+    'grade_item',
     {
         id: {
             allowNull: false,
@@ -11,15 +10,25 @@ var Grade = sequelize.define(
             primaryKey: true,
             type: Sequelize.INTEGER,
         },
-        courseId: {
+        gradeId: {
             allowNull: false,
             type: Sequelize.INTEGER,
-            field: 'course_id',
+            field: 'grade_id',
         },
-        studentId: {
+        gradeStructureId: {
             allowNull: false,
             type: Sequelize.INTEGER,
-            field: 'student_id',
+            field: 'grade_structure_id',
+        },
+        score: {
+            allowNull: false,
+            type: Sequelize.DOUBLE,
+            field: 'score',
+        },
+        isFinal: {
+            allowNull: false,
+            type: Sequelize.BOOLEAN,
+            field: 'is_final',
         },
         createdAt: {
             allowNull: false,
@@ -38,27 +47,4 @@ var Grade = sequelize.define(
     }
 )
 
-Grade.getClassGrade = async (courseId) => {
-    const selectQuery = `
-    SELECT account.id,
-       account.name,
-       account.student_id,
-       grade_item.grade_structure_id,
-       grade_item.score,
-       grade_item.is_final
-    FROM   grade_item
-       JOIN grade
-         ON grade.id = grade_item.grade_id
-       JOIN account
-         ON account.id = grade.student_id
-    WHERE  grade.course_id = ? `
-
-    return sequelize.query(selectQuery, {
-        replacements: [courseId],
-        model: GradeItem,
-        mapToModel: true,
-        raw: true,
-    })
-}
-
-export default Grade
+export default GradeItem

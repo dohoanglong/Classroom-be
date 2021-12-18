@@ -78,7 +78,7 @@ User.getUsersInClass = async (courseId) => {
         OR account.id = users_courses.student_id
   WHERE course_id= ?`
 
-    return await sequelize.query(selectQuery, {
+    return sequelize.query(selectQuery, {
         replacements: [courseId],
         model: UsersCourses,
         mapToModel: true,

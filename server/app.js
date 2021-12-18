@@ -11,6 +11,7 @@ import passport from './middlewares/auth.middleware'
 import courseRoute from './routes/course.route'
 import authRoute from './routes/auth.route'
 import userRoute from './routes/user.route'
+import gradeRoute from './routes/grade.route'
 
 dotenv.config()
 sequelize.sync()
@@ -33,6 +34,7 @@ app.use(express.static(path.join(__dirname, '../public')))
 app.use('/courses', courseRoute)
 app.use('/auth', authRoute)
 app.use('/user', userRoute)
+app.use('/grade', gradeRoute)
 app.use('/', indexRouter)
 
 app.use(function (err, req, res) {
