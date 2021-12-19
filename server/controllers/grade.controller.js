@@ -80,10 +80,11 @@ class GradeController {
 }
 
 
-const updateOneGrade = async ({ studentId, courseId, ...other }) => {
+const updateOneGrade = async ({ studentId,studentName, courseId, ...other }) => {
     try {
         const newGrade = {
             studentId: studentId,
+            studentName:studentName,
             courseId: courseId
         }
         const isExited = await checkIfExistedStudentGrade(courseId, studentId);

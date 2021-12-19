@@ -12,36 +12,44 @@ import { Op } from 'sequelize'
 // Create and Save a new Course
 class CourseController {
     static create = async (req, res) => {
-        // Validate request
-        if (!req.body) {
-            res.status(200).send({
-                message: 'Content can not be empty!',
-            })
+        try {
+            // Validate request
+            if (!req.body) {
+                res.status(200).send({
+                    message: 'Content can not be empty!',
+                })
+            }
+    
+            // Create a Course
+            const course = {
+                name: req.body.name,
+                subject: req.body.subject,
+                image: req.body.image,
+                description: req.body.description,
+                createdAt: Date(),
+                updatedAt: Date(),
+            }
+    
+            // Create a Users Course
+            const newCourse = await Course.create(course)
+    
+            const newUsersCourses = {
+                courseId: newCourse.dataValues.id,
+                teacherId: req.user.id,
+                createdAt: Date(),
+                updatedAt: Date(),
+            }
+            await UsersCourses.create(newUsersCourses)
+    
+            // Save Course in the database
+            res.send(newCourse)
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({
+                message:
+                    'Server Error'
+            });
         }
-
-        // Create a Course
-        const course = {
-            name: req.body.name,
-            subject: req.body.subject,
-            image: req.body.image,
-            description: req.body.description,
-            createdAt: Date(),
-            updatedAt: Date(),
-        }
-
-        // Create a Users Course
-        const newCourse = await Course.create(course)
-
-        const newUsersCourses = {
-            courseId: newCourse.dataValues.id,
-            teacherId: req.user.id,
-            createdAt: Date(),
-            updatedAt: Date(),
-        }
-        await UsersCourses.create(newUsersCourses)
-
-        // Save Course in the database
-        res.send(newCourse)
     }
 
     static findAllByUser = async (req, res) => {
@@ -50,7 +58,11 @@ class CourseController {
 
             res.send({ courses: courses })
         } catch (error) {
-            console.log(error.message)
+            console.log(error.message);
+            res.status(500).send({
+                message:
+                    'Server Error'
+            })
         }
     }
 
@@ -444,10 +456,10 @@ class CourseController {
     }
 
     static updateGradeStructure = async (req, res) => {
-        const { courseId, gradeStructure, maxIndex } = req.body
+        const { courseId, gradeStructure, maxId } = req.body
         const { id: userId } = req.user
 
-        const strGradeStructure = JSON.stringify({ gradeStructure: gradeStructure, maxIndex: maxIndex });
+        const strGradeStructure = JSON.stringify({ gradeStructure: gradeStructure, maxId: maxId });
 
         try {
             const userCourse = await UsersCourses.findAll({

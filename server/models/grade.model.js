@@ -18,8 +18,13 @@ var Grade = sequelize.define(
         },
         studentId: {
             allowNull: false,
-            type: Sequelize.INTEGER,
+            type: Sequelize.STRING(20),
             field: 'student_id',
+        },
+        studentName: {
+            allowNull: false,
+            type: Sequelize.STRING,
+            field: 'student_name',
         },
         createdAt: {
             allowNull: false,
@@ -41,17 +46,17 @@ var Grade = sequelize.define(
 Grade.getClassGrade = async (courseId) => {
     const selectQuery = `
     SELECT account.id,
-       account.name,
-       account.student_id,
+       grade.student_id,
+       grade.student_name,
        grade_item.grade_structure_id,
        grade_item.score,
        grade_item.is_final
-    FROM   grade_item
+    FROM grade_item
        JOIN grade
          ON grade.id = grade_item.grade_id
-       JOIN account
-         ON account.id = grade.student_id
-    WHERE  grade.course_id = ? `
+       LEFT JOIN account
+         ON account.student_id = grade.student_id
+    WHERE grade.course_id = ?`
 
     return sequelize.query(selectQuery, {
         replacements: [courseId],

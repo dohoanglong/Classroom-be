@@ -19,7 +19,7 @@ var User = sequelize.define(
         },
         studentId: {
             allowNull: true,
-            type: Sequelize.STRING,
+            type: Sequelize.STRING(20),
             field: 'student_id',
         },
 
