@@ -14,7 +14,7 @@ var Course = sequelize.define(
         name: {
             allowNull: false,
             type: Sequelize.STRING,
-            field: 'first_name',
+            field: 'name',
         },
         subject: {
             allowNull: false,

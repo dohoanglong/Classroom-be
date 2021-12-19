@@ -56,7 +56,12 @@ class CourseController {
         try {
             const courses = await Course.findCoursesByUserId(req.user.id)
 
-            res.send({ courses: courses })
+            const newCourses = courses.map(course=> {
+                const {row,deletedAt,createdAt,updatedAt,...newCourse} = course;
+                return newCourse;
+            })
+
+            res.send({ courses: newCourses })
         } catch (error) {
             console.log(error.message);
             res.status(500).send({
