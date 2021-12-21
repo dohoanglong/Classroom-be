@@ -8,7 +8,6 @@ import {
     generateInvitationLink,
 } from '../utils/emailer.util'
 import { Op } from 'sequelize'
-import Grade from '../models/grade.model'
 
 // Create and Save a new Course
 class CourseController {
