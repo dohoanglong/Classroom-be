@@ -8,6 +8,7 @@ import {
     generateInvitationLink,
 } from '../utils/emailer.util'
 import { Op } from 'sequelize'
+import Grade from '../models/grade.model'
 
 // Create and Save a new Course
 class CourseController {
@@ -19,7 +20,7 @@ class CourseController {
                     message: 'Content can not be empty!',
                 })
             }
-    
+
             // Create a Course
             const course = {
                 name: req.body.name,
@@ -29,10 +30,10 @@ class CourseController {
                 createdAt: Date(),
                 updatedAt: Date(),
             }
-    
+
             // Create a Users Course
             const newCourse = await Course.create(course)
-    
+
             const newUsersCourses = {
                 courseId: newCourse.dataValues.id,
                 teacherId: req.user.id,
@@ -40,7 +41,7 @@ class CourseController {
                 updatedAt: Date(),
             }
             await UsersCourses.create(newUsersCourses)
-    
+
             // Save Course in the database
             res.send(newCourse)
         } catch (error) {
@@ -56,8 +57,9 @@ class CourseController {
         try {
             const courses = await Course.findCoursesByUserId(req.user.id)
 
-            const newCourses = courses.map(course=> {
-                const {row,deletedAt,createdAt,updatedAt,...newCourse} = course;
+            const newCourses = courses.map(course => {
+                // eslint-disable-next-line no-unused-vars
+                const { row, deletedAt, createdAt, updatedAt, ...newCourse } = course;
                 return newCourse;
             })
 

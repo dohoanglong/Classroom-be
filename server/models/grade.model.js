@@ -49,6 +49,7 @@ Grade.getClassGrade = async (courseId) => {
        grade.student_id,
        grade.student_name,
        grade_item.grade_structure_id,
+       grade_item.title,
        grade_item.score,
        grade_item.is_final
     FROM grade_item
@@ -60,6 +61,31 @@ Grade.getClassGrade = async (courseId) => {
 
     return sequelize.query(selectQuery, {
         replacements: [courseId],
+        model: GradeItem,
+        mapToModel: true,
+        raw: true,
+    })
+}
+
+Grade.getStudentGrade = async (studentId,courseId)=> {
+    const selectQuery = `
+    select
+    grade.student_id,
+    grade.student_name,
+    grade_item.id as grade_item_id,
+    grade_item.grade_structure_id,
+    grade_item.title,
+    grade_item.score
+from
+    grade
+    join grade_item on grade.id = grade_item.grade_id
+where
+    grade.course_id = ?
+    and grade.student_id = ?
+    and grade_item.is_final = true`
+
+    return sequelize.query(selectQuery, {
+        replacements: [courseId,studentId],
         model: GradeItem,
         mapToModel: true,
         raw: true,

@@ -20,6 +20,11 @@ var GradeItem = sequelize.define(
             type: Sequelize.INTEGER,
             field: 'grade_structure_id',
         },
+        title: {
+            allowNull: false,
+            type: Sequelize.STRING,
+            field: 'title',
+        },
         score: {
             allowNull: false,
             type: Sequelize.DOUBLE,

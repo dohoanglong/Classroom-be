@@ -73,4 +73,5 @@ Course.findCoursesByUserId = async (userId) => {
         raw: true,
     })
 }
+
 export default Course

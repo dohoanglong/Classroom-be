@@ -1,6 +1,7 @@
 import Course from "../models/course.model";
 import Grade from "../models/grade.model";
 import GradeItem from "../models/gradeItem.model";
+import User from "../models/user.model";
 import UsersCourses from "../models/usersCourses.model";
 
 
@@ -15,9 +16,10 @@ class GradeController {
                 return;
             }
 
-            req.body.gradeList.forEach(async (obj) => {
+            for (const obj of req.body.gradeList) {
                 await updateOneGrade({ ...obj, courseId });
-            });
+            }
+
             res.status(200).send({ message: "update successfully" });
         } catch (error) {
             console.log(error);
@@ -59,13 +61,13 @@ class GradeController {
             var currIndex = -1;
             var returnData = [];
             data.forEach((curr) => {
-                const { id, gradeStructureId, score,isFinal, ...other } = curr;
+                const { id, gradeStructureId, score, isFinal, ...other } = curr;
 
                 if (!returnData.length || returnData[currIndex].id !== id) {
-                    returnData.push({ id, [gradeStructureId]: {score,isFinal}, ...other });
+                    returnData.push({ id, [gradeStructureId]: { score, isFinal }, ...other });
                     currIndex++;
                 } else {
-                    returnData[currIndex][`${gradeStructureId}`] = {score,isFinal};
+                    returnData[currIndex][`${gradeStructureId}`] = { score, isFinal };
                 }
             });
 
@@ -77,140 +79,170 @@ class GradeController {
             })
         }
     }
+
+    static viewGrade = async (req, res) => {
+        const userId = req.user.id;
+
+        //check whether the user is in this course or not
+        const usersCourse = await UsersCourses.findOne({
+            where:
+            {
+                studentId: userId,
+                courseId: req.body.courseId
+            },
+            raw: true
+        })
+
+
+        if (!usersCourse) {
+            res.status(200).send({ message: "You are not a student of this class" });
+            return;
+        }
+        //check whether the user is mapped with student id (MSVV) or not
+        const user = await User.findOne({
+            where: {
+                id: userId
+            },
+            raw: true
+        })
+
+        if (!user.studentId) {
+            res.status(200).send({ message: "You have not mapped your account with your student id yet" });
+            return;
+        }
+
+        //join between grade and grade_item to get grade of the user
+        const data = await Grade.getStudentGrade(user.studentId, req.body.courseId);
+
+        var currIndex = -1;
+        var returnData = [];
+        data.forEach((curr) => {
+            const { student_id, gradeStructureId, grade_item_id, title, score, ...other } = curr;
+
+            if (!returnData.length || returnData[currIndex].student_id !== student_id) {
+                returnData.push({ student_id, [gradeStructureId]: { grade_item_id, title, score }, ...other });
+                currIndex++;
+            } else {
+                returnData[currIndex][`${gradeStructureId}`] = { grade_item_id, title, score };
+            }
+        });
+
+        res.status(200).send(returnData);
+    }
 }
 
 
-const updateOneGrade = async ({ studentId,studentName, courseId, ...other }) => {
-    try {
-        const newGrade = {
-            studentId: studentId,
-            studentName:studentName,
-            courseId: courseId
-        }
-        const isExited = await checkIfExistedStudentGrade(courseId, studentId);
+const updateOneGrade = async ({ studentId, studentName, courseId, ...other }) => {
+    const newGrade = {
+        studentId: studentId,
+        studentName: studentName,
+        courseId: courseId
+    }
+    const isExited = await checkIfExistedStudentGrade(courseId, studentId);
 
-        var gradeId;
+    var gradeId;
+    if (isExited) {
+        const grade = await Grade.update(newGrade, {
+            where: {
+                studentId: studentId,
+                courseId: courseId,
+            },
+            returning: true,
+            plain: true,
+        });
+        gradeId = grade[1].dataValues.id;
+    }
+    else {
+        const grade = await Grade.create(newGrade, { plain: true });
+        gradeId = grade.dataValues.id;
+    }
+
+    await updateGradeItem(gradeId, courseId, other);
+
+    return newGrade;
+}
+
+const updateGradeItem = async (gradeId, courseId, other) => {
+    const course = await Course.findOne({
+        where: {
+            id: courseId
+        },
+        raw: true
+    });
+    const gradeStructure = JSON.parse(course.gradeStructure).gradeStructure;
+
+    gradeStructure.forEach(async (element) => {
+        const gradeStructureId = element.id;
+        const gradeStructureTitle = element.title;
+
+        const newGradeItem = {
+            gradeId: gradeId,
+            score: other[`${gradeStructureId}`].score,
+            isFinal: other[`${gradeStructureId}`].isFinal,
+            gradeStructureId: gradeStructureId,
+            title: gradeStructureTitle
+        };
+
+        const isExited = await checkIfExistedStudentGradeItem(gradeId, gradeStructureId);
+
         if (isExited) {
-            const grade = await Grade.update(newGrade, {
+            await GradeItem.update(newGradeItem, {
                 where: {
-                    studentId: studentId,
-                    courseId: courseId,
+                    gradeId: gradeId,
+                    gradeStructureId: gradeStructureId,
                 },
                 returning: true,
                 plain: true,
             });
-            gradeId = grade[1].dataValues.id;
         }
         else {
-            const grade = await Grade.create(newGrade, { plain: true });
-            gradeId = grade.dataValues.id;
+            await GradeItem.create(newGradeItem, { raw: true });
         }
 
-        await updateGradeItem(gradeId, courseId, other);
-
-
-        return newGrade;
-    } catch (error) {
-        console.log(error);
-        throw error.message;
-    }
-}
-
-const updateGradeItem = async (gradeId, courseId, other) => {
-    try {
-        const course = await Course.findOne({
-            where: {
-                id: courseId
-            },
-            raw: true
-        });
-        const gradeStructure = JSON.parse(course.gradeStructure).gradeStructure;
-
-        gradeStructure.forEach(async (element) => {
-            const gradeStructureId = element.id;
-
-            const newGradeItem = {
-                gradeId: gradeId,
-                score: other[`${gradeStructureId}`].score,
-                isFinal: other[`${gradeStructureId}`].isFinal,
-                gradeStructureId: gradeStructureId
-            };
-
-            const isExited = await checkIfExistedStudentGradeItem(gradeId, gradeStructureId);
-
-            if (isExited) {
-                await GradeItem.update(newGradeItem, {
-                    where: {
-                        gradeId: gradeId,
-                        gradeStructureId: gradeStructureId,
-                    },
-                    returning: true,
-                    plain: true,
-                });
-            }
-            else {
-                await GradeItem.create(newGradeItem, { raw: true });
-            }
-
-        })
-
-    } catch (error) {
-        console.log(error);
-        throw error.message;
-    }
+    })
 }
 
 const checkIfTeacherOfClass = async (userId, courseId) => {
-    try {
-        const userCourse = await UsersCourses.findOne({
-            where: {
-                courseId: courseId,
-                // [Op.or]: [{ teacherId: userId }, { subTeacherId: userId }],
-                teacherId: userId
-            },
-            raw: true
-        });
-        return userCourse;
-    } catch (error) {
-        console.log(error);
-        throw error.message;
-    }
+    const userCourse = await UsersCourses.findOne({
+        where: {
+            courseId: courseId,
+            // [Op.or]: [{ teacherId: userId }, { subTeacherId: userId }],
+            teacherId: userId
+        },
+        raw: true
+    });
+
+    return userCourse;
+
+
 }
 
 
 const checkIfExistedStudentGrade = async (courseId, studentId) => {
-    try {
-        const grade = await Grade.findOne({
-            where: {
-                courseId: courseId,
-                studentId: studentId
-            },
-            raw: true
-        });
 
-        return grade;
-    } catch (error) {
-        console.log(error);
-        throw error.message;
-    }
+    const isExisted = await Grade.findOne({
+        where: {
+            courseId: courseId,
+            studentId: studentId
+        },
+        raw: true
+    });
+
+    return isExisted;
+
 
 }
 
 const checkIfExistedStudentGradeItem = async (gradeId, gradeStructureId) => {
-    try {
-        const gradeItem = await GradeItem.findOne({
-            where: {
-                gradeId: gradeId,
-                gradeStructureId: gradeStructureId
-            },
-            raw: true
-        });
+    const gradeItem = await GradeItem.findOne({
+        where: {
+            gradeId: gradeId,
+            gradeStructureId: gradeStructureId
+        },
+        raw: true
+    });
 
-        return gradeItem;
-    } catch (error) {
-        console.log(error);
-        throw error.message;
-    }
+    return gradeItem;
 }
 
 export default GradeController;

@@ -4,10 +4,17 @@ import passport from 'passport'
 var router = express.Router()
 
 
+
 router.get(
     '/getClassGrade/:courseId',
     passport.authenticate('jwt', { session: false }),
     GradeController.getClassGrade
+)
+
+router.post(
+    '/getStudentGrade',
+    passport.authenticate('jwt', { session: false }),
+    GradeController.viewGrade
 )
 
 router.post(
