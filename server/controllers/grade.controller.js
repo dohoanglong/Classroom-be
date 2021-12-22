@@ -61,7 +61,8 @@ class GradeController {
             var currIndex = -1;
             var returnData = [];
             data.forEach((curr) => {
-                const { id, gradeStructureId, score, isFinal, ...other } = curr;
+                var { id, gradeStructureId, score, isFinal, ...other } = curr;
+                if (score < 0) score = null;
 
                 if (!returnData.length || returnData[currIndex].id !== id) {
                     returnData.push({ id, [gradeStructureId]: { score, isFinal }, ...other });
@@ -169,7 +170,7 @@ const updateGradeItem = async (gradeId, courseId, other) => {
         },
         raw: true
     });
-    const gradeStructure = JSON.parse(course.gradeStructure).gradeStructure;
+    const gradeStructure = JSON.parse(JSON.parse(course.gradeStructure).gradeStructure);
 
     gradeStructure.forEach(async (element) => {
         const gradeStructureId = element.id;
@@ -177,7 +178,7 @@ const updateGradeItem = async (gradeId, courseId, other) => {
 
         const newGradeItem = {
             gradeId: gradeId,
-            score: other[`${gradeStructureId}`].score,
+            score: other[`${gradeStructureId}`].score ? other[`${gradeStructureId}`].score : -1,
             isFinal: other[`${gradeStructureId}`].isFinal,
             gradeStructureId: gradeStructureId,
             title: gradeStructureTitle
