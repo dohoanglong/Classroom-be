@@ -62,7 +62,7 @@ class GradeController {
             var returnData = [];
             data.forEach((curr) => {
                 var { id, gradeStructureId, score, isFinal, ...other } = curr;
-                if (score < 0) score = null;
+                if (score < 0) score = "";
 
                 if (!returnData.length || returnData[currIndex].id !== id) {
                     returnData.push({ id, [gradeStructureId]: { score, isFinal }, ...other });
