@@ -11,7 +11,7 @@ class AuthController {
 
     static login = async (req, res) => {
         const user = req.user
-        console.log(user)
+
         const body = { id: user.id, email: user.mail }
         const token = jwt.sign({ user: body }, process.env.JWT_SECRET_KEY)
         res.json({

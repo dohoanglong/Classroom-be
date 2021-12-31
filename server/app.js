@@ -6,17 +6,20 @@ import dotenv from 'dotenv'
 import cors from 'cors'
 import indexRouter from './routes/index'
 import sequelize from './models/db'
-import passport from './middlewares/auth.middleware'
+import authPassport from './middlewares/auth.middleware'
+import adminPassport from './middlewares/admin.middleware'
 
 import courseRoute from './routes/course.route'
 import authRoute from './routes/auth.route'
 import userRoute from './routes/user.route'
 import gradeRoute from './routes/grade.route'
+import adminRoute from './routes/admin.route'
 
 dotenv.config()
 sequelize.sync()
 var app = express()
-app.use(passport.initialize())
+app.use(authPassport.initialize())
+app.use(adminPassport.initialize())
 
 const corsOption = {
     origin: true,
@@ -35,6 +38,7 @@ app.use('/courses', courseRoute)
 app.use('/auth', authRoute)
 app.use('/user', userRoute)
 app.use('/grade', gradeRoute)
+app.use('/admin', adminRoute)
 app.use('/', indexRouter)
 
 app.use(function (err, req, res) {
