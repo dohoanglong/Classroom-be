@@ -36,6 +36,7 @@ class AuthController {
             if (data?.email === req.body.mail) {
                 var user = await User.findOne({
                     where: { mail: req.body.mail },
+                    paranoid: false
                 })
 
                 if (!user) {
@@ -43,6 +44,9 @@ class AuthController {
                         req.body.name,
                         req.body.mail
                     )
+                } else if (user.deletedAt) {
+                    res.send({ message: 'This account is banned' });
+                    return;
                 }
 
                 req.user = user

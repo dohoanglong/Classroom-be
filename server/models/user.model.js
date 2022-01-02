@@ -51,6 +51,7 @@ var User = sequelize.define(
     },
     {
         freezeTableName: true, // Model tableName will be the same as the model name
+        paranoid: true // <<< Apply soft-deleted record
     }
 )
 

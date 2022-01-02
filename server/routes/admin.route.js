@@ -49,4 +49,36 @@ router.post(
     AdminController.logIn
 )
 
-export default router
+router.get('/getClassDetail/:courseId',
+    passport.authenticate('jwt', { session: false }),
+    AdminController.getClassDetail);
+
+router.get('/getAllClasses',
+    passport.authenticate('jwt', { session: false }),
+    AdminController.getAllClasses);
+
+router.get('/getUserDetail/:userId',
+    passport.authenticate('jwt', { session: false }),
+    AdminController.getUserDetail);
+
+router.get('/getAllUsers',
+    passport.authenticate('jwt', { session: false }),
+    AdminController.getAllUsers);
+
+router.get('/getAdminDetail/:userName',
+    passport.authenticate('jwt', { session: false }),
+    AdminController.getAdminDetail);
+
+router.get('/getAllAdmins',
+    passport.authenticate('jwt', { session: false }),
+    AdminController.getAllAdmins);
+
+router.get('/banUser/:userId',
+    passport.authenticate('jwt', { session: false }),
+    AdminController.banUser);
+
+router.get('/unbanUser/:userId',
+    passport.authenticate('jwt', { session: false }),
+    AdminController.unbanUser);
+
+export default router;

@@ -17,12 +17,14 @@ passport.use(
         },
         async (req, mail, password, done) => {
             try {
-                var user = await User.findOne({ where: { mail: mail } })
+                var user = await User.findOne({ where: { mail: mail }, paranoid: false  })
                 if (user) {
                     return done(null, false, {
                         message:
                             'Email already existed, please choose another email',
                     })
+                } else if(user.deletedAt) {
+                    return done(null, false, { message: 'This email is banned' })
                 }
 
                 const encrytedPassword = await User.generateHash(password)
@@ -57,11 +59,14 @@ passport.use(
         },
         async (req, mail, password, done) => {
             try {
-                const user = await User.findOne({ where: { mail } })
+                const user = await User.findOne({ where: { mail }, paranoid: false })
 
                 if (!user) {
                     return done(null, false, { message: 'User not found' })
+                } else if(user.deletedAt) {
+                    return done(null, false, { message: 'User is banned' })
                 }
+                
                 const isValidate = await User.isValidPassword(
                     password,
                     user.password
