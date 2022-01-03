@@ -81,4 +81,8 @@ router.get('/unbanUser/:userId',
     passport.authenticate('jwt', { session: false }),
     AdminController.unbanUser);
 
+router.post('/toggleStudentId',
+    passport.authenticate('jwt', { session: false }),
+    AdminController.toggleStudentId);
+
 export default router;

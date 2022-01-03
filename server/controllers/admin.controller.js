@@ -76,12 +76,21 @@ class AdminController {
                 return;
             }
 
-            const user = await User.findAll({
+            const user = await User.findOne({
                 attributes: { exclude: ['password'] },
-                where: { id: userId }
+                where: { id: userId },
+                raw: true
             });
             if (user) {
-                res.status(200).send(user);
+                // eslint-disable-next-line no-unused-vars
+                var { unMappedStudentId,...newUser } = user;
+                if (!user.studentId && user.unMappedStudentId) {
+                    newUser = { ...newUser, isMappedStudentId: false }
+                } else if (user.studentId) {
+                    newUser = { ...newUser, isMappedStudentId: true }
+                }
+
+                res.status(200).send(newUser);
             } else {
                 res.status(200).send({ message: 'user id does not exist' });
             }
@@ -100,9 +109,21 @@ class AdminController {
                 return;
             }
 
-            const users = await User.findAll({
-                attributes: { exclude: ['password'] }
+            var users = await User.findAll({
+                attributes: { exclude: ['password'] },
+                raw: true
             });
+
+            users = users.map(user => {
+                // eslint-disable-next-line no-unused-vars
+                const { unMappedStudentId,...newUser } = user;
+                if (!user.studentId && user.unMappedStudentId) {
+                    return { ...newUser, isMappedStudentId: false }
+                } else if (user.studentId) {
+                    return { ...newUser, isMappedStudentId: true }
+                }
+                return newUser;
+            })
 
             res.status(200).send(users);
         } catch (error) {
@@ -210,6 +231,68 @@ class AdminController {
             });
 
             res.status(200).send(admins);
+        } catch (error) {
+            console.log(error);
+            res.status(500).send('Server Error')
+        }
+    }
+
+    static toggleStudentId = async (req, res) => {
+        try {
+            const { userName } = req.user;
+
+            if (!userName || !isAdmin(userName)) {
+                res.status(200).send('You are not an admin');
+                return;
+            }
+
+            const { userId, isMappedStudentId } = req.body;
+
+            var user = await User.findOne({
+                where: { id: userId },
+                raw: true
+            })
+
+            if (!user) {
+                res.status(200).send({
+                    message: 'User does not exist',
+                })
+                return;
+            }
+
+            if (isMappedStudentId === true && !user.studentId && user.unMappedStudentId) {
+                user = {
+                    ...user,
+                    studentId: user.unMappedStudentId,
+                    unMappedStudentId: null
+                }
+                const updatedUser = await User.update(user, {
+                    where: {
+                        id: user.id,
+                    },
+                    returning: true,
+                    plain: true,
+                })
+                res.send({ message: "student id have been mapped", updatedUser })
+                return;
+            }
+            if (isMappedStudentId === false && user.studentId) {
+                user = {
+                    ...user,
+                    studentId: null,
+                    unMappedStudentId: user.studentId
+                }
+                const updatedUser = await User.update(user, {
+                    where: {
+                        id: user.id,
+                    },
+                    returning: true,
+                    plain: true,
+                })
+                res.send({ message: "student id have been unmapped", updatedUser })
+                return;
+            }
+            res.send({ message: "nothing happened" });
         } catch (error) {
             console.log(error);
             res.status(500).send('Server Error')

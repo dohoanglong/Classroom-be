@@ -22,7 +22,11 @@ var User = sequelize.define(
             type: Sequelize.STRING(20),
             field: 'student_id',
         },
-
+        unMappedStudentId: {
+            allowNull: true,
+            type: Sequelize.STRING(20),
+            field: 'unmapped_student_id',
+        },
         image: {
             // allowNull: false,
             type: Sequelize.STRING,

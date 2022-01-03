@@ -41,7 +41,7 @@ app.use('/grade', gradeRoute)
 app.use('/admin', adminRoute)
 app.use('/', indexRouter)
 
-app.use(function (err, req, res) {
+app.use('/', (err, req, res) => {
     console.error(err)
     res.send('Something broke!')
 })

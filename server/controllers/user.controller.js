@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import User from '../models/user.model'
 import { verifyFb, verifyGg } from '../helpers/auth'
+import { Op } from 'sequelize'
 
 class UserController {
     static create = async (req, res, next, isFromSocial = false) => {
@@ -185,20 +186,42 @@ class UserController {
                 return
             }
 
-            console.log(user)
-            if (user.dataValues.student_id) {
+            const studentId = req.body.studentId;
+            const studentIds = await User.findOne({
+                where: {
+                    [Op.or]: [
+                        { studentId: studentId },
+                        { unMappedStudentId: studentId }
+                    ]
+                },
+                attributes: ['id'],
+            });
+
+
+            if (studentIds.dataValues) {
                 res.status(200).send({
-                    message: 'Student Id is already taken',
+                    message: 'This student id is already taken',
                 })
-                return
+                return;
             }
-            const updatedUser = await User.update(req.body, {
+
+            var newObj = {
+                studentId: studentId
+            };
+            if(!user.studentId && user.unMappedStudentId) {
+                newObj = {
+                    unMappedStudentId: studentId
+                }
+            }
+
+            const updatedUser = await User.update(newObj, {
                 where: {
                     id: req.user.id,
                 },
                 returning: true,
                 plain: true,
             })
+
             res.send(updatedUser[1].dataValues)
         } catch (error) {
             console.log(error)
