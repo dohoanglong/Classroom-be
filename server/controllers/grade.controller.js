@@ -59,7 +59,7 @@ class GradeController {
             const data = await Grade.getClassGrade(courseId);
             const course = await Course.findOne({ where: { id: courseId }, raw: true });
 
-            const gradeStructure = JSON.parse(course.gradeStructure).gradeStructure;
+            const gradeStructure = JSON.parse(JSON.parse(course.gradeStructure).gradeStructure);
 
             var currIndex = -1;
             var returnData = [];
