@@ -1,83 +1,87 @@
 {
-  "name": "classroom",
-  "version": "0.0.0",
-  "private": true,
-  "scripts": {
-    "start": "npm run prod",
-    "build": "npm-run-all clean transpile",
-    "server": "node  --inspect ./dist-server/bin/www",
-    "dev": "NODE_ENV=development npm-run-all build server",
-    "prod": "NODE_ENV=production npm-run-all build server",
-    "rimraf": "./node_modules/rimraf/bin.js",
-    "transpile": "babel ./server --out-dir dist-server",
-    "clean": "rimraf dist-server",
-    "watch:dev": "set NODE_ENV=development & nodemon",
-    "db:create": "sequelize-cli db:create",
-    "debug": "npm start --debug"
-  },
-  "dependencies": {
-    "@babel/cli": "^7.16.0",
-    "@babel/core": "^7.16.0",
-    "@babel/plugin-transform-runtime": "^7.16.0",
-    "@babel/preset-env": "^7.16.0",
-    "axios": "^0.24.0",
-    "bcrypt": "^5.0.1",
-    "cookie-parser": "~1.4.4",
-    "cors": "^2.8.5",
-    "debug": "~2.6.9",
-    "dotenv": "^10.0.0",
-    "express": "~4.16.1",
-    "google-auth-library": "^7.10.2",
-    "jsonwebtoken": "^8.5.1",
-    "morgan": "~1.9.1",
-    "mysql": "^2.18.1",
-    "nodemailer": "^6.7.1",
-    "nodemon": "^2.0.14",
-    "npm-run-all": "^4.1.5",
-    "passport": "^0.5.0",
-    "passport-jwt": "^4.0.0",
-    "passport-local": "^1.0.0",
-    "pg": "^8.7.1",
-    "prettylink": "^1.0.0",
-    "sequelize": "^6.9.0"
-  },
-  "babel": {
-    "presets": [
-      [
-        "@babel/preset-env",
-        {
-          "targets": {
-            "node": "10"
-          }
+    "name": "classroom",
+    "version": "0.0.0",
+    "private": true,
+    "scripts": {
+        "start": "npm run prod",
+        "build": "npm-run-all clean transpile",
+        "server": "node  --inspect ./dist-server/bin/www",
+        "dev": "NODE_ENV=development npm-run-all build server",
+        "prod": "NODE_ENV=production npm-run-all build server",
+        "rimraf": "./node_modules/rimraf/bin.js",
+        "transpile": "babel ./server --out-dir dist-server",
+        "clean": "rimraf dist-server",
+        "watch:dev": "set NODE_ENV=development & nodemon",
+        "db:create": "sequelize-cli db:create",
+        "debug": "npm start --debug",
+        "pretty": "prettier --write \"./**/*.{js,jsx,json}\"",
+        "lint": "eslint ./"
+    },
+    "dependencies": {
+        "@babel/cli": "^7.16.0",
+        "@babel/core": "^7.16.0",
+        "@babel/plugin-transform-runtime": "^7.16.0",
+        "@babel/preset-env": "^7.16.0",
+        "axios": "^0.24.0",
+        "bcrypt": "^5.0.1",
+        "cookie-parser": "~1.4.4",
+        "cors": "^2.8.5",
+        "debug": "~2.6.9",
+        "dotenv": "^10.0.0",
+        "express": "~4.16.1",
+        "google-auth-library": "^7.10.2",
+        "jsonwebtoken": "^8.5.1",
+        "morgan": "~1.9.1",
+        "mysql": "^2.18.1",
+        "nodemailer": "^6.7.1",
+        "nodemon": "^2.0.14",
+        "npm-run-all": "^4.1.5",
+        "passport": "^0.5.0",
+        "passport-jwt": "^4.0.0",
+        "passport-local": "^1.0.0",
+        "pg": "^8.7.1",
+        "prettier": "^2.5.1",
+        "prettylink": "^1.0.0",
+        "sequelize": "^6.9.0"
+    },
+    "babel": {
+        "presets": [
+            [
+                "@babel/preset-env",
+                {
+                    "targets": {
+                        "node": "10"
+                    }
+                }
+            ]
+        ],
+        "plugins": [
+            "@babel/plugin-transform-runtime"
+        ],
+        "env": {
+            "debug": {
+                "sourceMaps": "inline",
+                "retainLines": true
+            }
         }
-      ]
-    ],
-    "plugins": [
-      "@babel/plugin-transform-runtime"
-    ],
-    "env": {
-      "debug": {
-        "sourceMaps": "inline",
-        "retainLines": true
-      }
+    },
+    "nodemonConfig": {
+        "exec": "npm run dev",
+        "watch": [
+            "server/*",
+            "public/*"
+        ],
+        "ignore": [
+            "**/__tests__/**",
+            "*.test.js",
+            "*.spec.js"
+        ]
+    },
+    "devDependencies": {
+        "babel-plugin-transform-runtime": "^6.23.0",
+        "babel-runtime": "^6.26.0",
+        "eslint": "^8.4.1",
+        "rimraf": "^3.0.2",
+        "sequelize-cli": "^6.3.0"
     }
-  },
-  "nodemonConfig": {
-    "exec": "npm run dev",
-    "watch": [
-      "server/*",
-      "public/*"
-    ],
-    "ignore": [
-      "**/__tests__/**",
-      "*.test.js",
-      "*.spec.js"
-    ]
-  },
-  "devDependencies": {
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-runtime": "^6.26.0",
-    "rimraf": "^3.0.2",
-    "sequelize-cli": "^6.3.0"
-  }
 }

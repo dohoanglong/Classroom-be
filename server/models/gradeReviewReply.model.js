@@ -1,8 +1,8 @@
 import sequelize from './db.js'
 import { Sequelize } from 'sequelize'
 
-var UsersCourses = sequelize.define(
-    'users_courses',
+var GradeReviewReply = sequelize.define(
+    'grade_review_reply',
     {
         id: {
             allowNull: false,
@@ -10,24 +10,20 @@ var UsersCourses = sequelize.define(
             primaryKey: true,
             type: Sequelize.INTEGER,
         },
-        courseId: {
+        gradeReviewId: {
             allowNull: false,
             type: Sequelize.INTEGER,
-            field: 'course_id',
+            field: 'grade_review_id',
         },
-        studentId: {
-            allowNull: true,
+        userId: {
+            allowNull: false,
             type: Sequelize.INTEGER,
-            field: 'student_id',
+            field: 'user_id',
         },
-        teacherId: {
-            type: Sequelize.INTEGER,
-            field: 'teacher_id',
-        },
-        subTeacherId: {
-            allowNull: true,
-            type: Sequelize.INTEGER,
-            field: 'subteacher_id',
+        comment: {
+            allowNull: false,
+            type: Sequelize.STRING,
+            field: 'comment',
         },
         createdAt: {
             allowNull: false,
@@ -46,4 +42,4 @@ var UsersCourses = sequelize.define(
     }
 )
 
-export default UsersCourses
+export default GradeReviewReply;

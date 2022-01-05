@@ -1,8 +1,8 @@
 import sequelize from './db.js'
 import { Sequelize } from 'sequelize'
 
-var UsersCourses = sequelize.define(
-    'users_courses',
+var GradeItem = sequelize.define(
+    'grade_item',
     {
         id: {
             allowNull: false,
@@ -10,24 +10,30 @@ var UsersCourses = sequelize.define(
             primaryKey: true,
             type: Sequelize.INTEGER,
         },
-        courseId: {
+        gradeId: {
             allowNull: false,
             type: Sequelize.INTEGER,
-            field: 'course_id',
+            field: 'grade_id',
         },
-        studentId: {
-            allowNull: true,
+        gradeStructureId: {
+            allowNull: false,
             type: Sequelize.INTEGER,
-            field: 'student_id',
+            field: 'grade_structure_id',
         },
-        teacherId: {
-            type: Sequelize.INTEGER,
-            field: 'teacher_id',
+        title: {
+            allowNull: false,
+            type: Sequelize.STRING,
+            field: 'title',
         },
-        subTeacherId: {
-            allowNull: true,
-            type: Sequelize.INTEGER,
-            field: 'subteacher_id',
+        score: {
+            allowNull: false,
+            type: Sequelize.DOUBLE,
+            field: 'score',
+        },
+        isFinal: {
+            allowNull: false,
+            type: Sequelize.BOOLEAN,
+            field: 'is_final',
         },
         createdAt: {
             allowNull: false,
@@ -46,4 +52,4 @@ var UsersCourses = sequelize.define(
     }
 )
 
-export default UsersCourses
+export default GradeItem

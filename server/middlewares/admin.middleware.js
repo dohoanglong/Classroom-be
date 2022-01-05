@@ -1,46 +1,47 @@
 import passport from 'passport'
 import passpotLocal from 'passport-local'
 import passportJwt from 'passport-jwt'
-import User from '../models/user.model'
+import AdminAccount from '../models/adminAccount.model'
 
 const JWTstrategy = passportJwt.Strategy
 const ExtractJWT = passportJwt.ExtractJwt
 const localStrategy = passpotLocal.Strategy
 
 passport.use(
-    'register',
+    'createAdminAccount',
     new localStrategy(
         {
-            usernameField: 'mail',
+            usernameField: 'userName',
             passwordField: 'password',
             passReqToCallback: true,
         },
-        async (req, mail, password, done) => {
+        async (req, userName, password, done) => {
             try {
-                var user = await User.findOne({ where: { mail: mail }, paranoid: false  })
-                if (user) {
+                var adminAccount = await AdminAccount.findOne({ where: { userName } })
+                if (adminAccount) {
                     return done(null, false, {
                         message:
-                            'Email already existed, please choose another email',
+                            'User name already existed, please choose another name',
                     })
-                } else if(user.deletedAt) {
-                    return done(null, false, { message: 'This email is banned' })
                 }
 
-                const encrytedPassword = await User.generateHash(password)
+                const encrytedPassword = await AdminAccount.generateHash(password)
 
-                user = {
-                    name: req.body.name,
+                const {name,age,mail,phoneNumber} = req.body;
+
+                adminAccount = {
+                    userName: userName,
                     password: encrytedPassword,
-                    mail: mail,
-                    createdAt: Date(),
-                    updatedAt: Date(),
+                    name,
+                    age,
+                    mail,
+                    phoneNumber
                 }
 
-                // Save User into the database
-                const newUser = await User.create(user)
+                // Save admin into the database
+                const newAdmin = await AdminAccount.create(adminAccount)
 
-                return done(null, newUser)
+                return done(null, newAdmin)
             } catch (error) {
                 console.log(error)
                 done(error)
@@ -50,32 +51,29 @@ passport.use(
 )
 
 passport.use(
-    'login',
+    'loginIntoAdminAccount',
     new localStrategy(
         {
-            usernameField: 'mail',
+            usernameField: 'userName',
             passwordField: 'password',
             passReqToCallback: true,
         },
-        async (req, mail, password, done) => {
+        async (req, userName, password, done) => {
             try {
-                const user = await User.findOne({ where: { mail }, paranoid: false })
+                const adminAccount = await AdminAccount.findOne({ where: { userName } })
 
-                if (!user) {
+                if (!adminAccount) {
                     return done(null, false, { message: 'User not found' })
-                } else if(user.deletedAt) {
-                    return done(null, false, { message: 'User is banned' })
                 }
-                
-                const isValidate = await User.isValidPassword(
+                const isValidate = await AdminAccount.isValidPassword(
                     password,
-                    user.password
+                    adminAccount.password
                 )
                 if (!isValidate) {
                     return done(null, false, { message: 'Wrong Password' })
                 }
 
-                return done(null, user, { message: 'Logged in Successfully' })
+                return done(null, adminAccount, { message: 'Logged in Successfully' })
             } catch (error) {
                 return done(error)
             }

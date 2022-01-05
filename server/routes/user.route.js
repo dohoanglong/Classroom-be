@@ -1,36 +1,32 @@
-import Users from './../controllers/user.controller';
-import express from 'express';
-var router = express.Router();
-import passport from 'passport';
+import UserController from './../controllers/user.controller'
+import express from 'express'
+var router = express.Router()
+import passport from 'passport'
 // Create a new Course
 
+router.post('/', passport.authenticate('jwt', { session: false }), UserController.create)
+router.put('/', passport.authenticate('jwt', { session: false }), UserController.update)
+router.post('/login', UserController.findOne)
+router.post('/authSocial', UserController.authSocial)
 router.post(
-  '/',
-  passport.authenticate('jwt', { session: false }),
-  Users.create
-);
-router.put('/', passport.authenticate('jwt', { session: false }), Users.update);
-router.post('/login', Users.findOne);
-router.post('/authSocial', Users.authSocial);
-router.post(
-  '/mapStudentId',
-  passport.authenticate('jwt', { session: false }),
-  Users.mapStudentIdToAccount
-);
+    '/mapStudentId',
+    passport.authenticate('jwt', { session: false }),
+    UserController.mapStudentIdToAccount
+)
 router.get(
-  '/',
-  passport.authenticate('jwt', { session: false }),
-  Users.getUserDetail
-);
+    '/',
+    passport.authenticate('jwt', { session: false }),
+    UserController.getUserDetail
+)
 router.post(
-  '/getUserInClass',
-  passport.authenticate('jwt', { session: false }),
-  Users.getUserInClass
-);
+    '/getUserInClass',
+    passport.authenticate('jwt', { session: false }),
+    UserController.getUserInClass
+)
 router.delete(
-  '/',
-  passport.authenticate('jwt', { session: false }),
-  Users.delete
-);
+    '/',
+    passport.authenticate('jwt', { session: false }),
+    UserController.delete
+)
 
-export default router;
+export default router
