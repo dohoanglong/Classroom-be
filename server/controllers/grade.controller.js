@@ -57,15 +57,19 @@ class GradeController {
             }
 
             const data = await Grade.getClassGrade(courseId);
+            const course = await Course.findOne({ where: { id: courseId }, raw: true });
+
+            const gradeStructure = JSON.parse(course.gradeStructure).gradeStructure;
 
             var currIndex = -1;
             var returnData = [];
             data.forEach((curr) => {
-                var { id, gradeStructureId, score, isFinal, ...other } = curr;
+                var { student_id, gradeStructureId, score, isFinal, ...other } = curr;
                 if (score < 0) score = "";
 
-                if (!returnData.length || returnData[currIndex].id !== id) {
-                    returnData.push({ id, [gradeStructureId]: { score, isFinal }, ...other });
+                if (!returnData.length || returnData[currIndex].student_id !== student_id) {
+                    returnData = addRemainingGrastrutureElement(returnData, gradeStructure, gradeStructureId, currIndex);
+                    returnData.push({ student_id, [gradeStructureId]: { score, isFinal }, ...other });
                     currIndex++;
                 } else {
                     returnData[currIndex][`${gradeStructureId}`] = { score, isFinal };
@@ -108,9 +112,14 @@ class GradeController {
         })
 
         if (!user.studentId) {
+            if (user.unMappedStudentId) {
+                res.status(200).send({ message: "Your student id was unmmaped by admin" });
+                return;
+            }
             res.status(200).send({ message: "You have not mapped your account with your student id yet" });
             return;
         }
+
 
         //join between grade and grade_item to get grade of the user
         const data = await Grade.getStudentGrade(user.studentId, req.body.courseId);
@@ -244,6 +253,17 @@ const checkIfExistedStudentGradeItem = async (gradeId, gradeStructureId) => {
     });
 
     return gradeItem;
+}
+
+const addRemainingGrastrutureElement = (returnData, gradeStructure, gradeStructureId, currIndex) => {
+    if (returnData.length) {
+        gradeStructure.forEach(e => {
+            if (!returnData[currIndex][`${e.id}`]) {
+                returnData[currIndex][`${e.id}`] = { score: null, isFinal: false };
+            }
+        })
+    }
+    return returnData;
 }
 
 export default GradeController;
