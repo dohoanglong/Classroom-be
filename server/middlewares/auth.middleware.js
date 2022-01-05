@@ -23,7 +23,7 @@ passport.use(
                         message:
                             'Email already existed, please choose another email',
                     })
-                } else if(user.deletedAt) {
+                } else if(user?.deletedAt) {
                     return done(null, false, { message: 'This email is banned' })
                 }
 

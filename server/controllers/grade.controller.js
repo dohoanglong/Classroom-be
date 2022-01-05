@@ -59,7 +59,7 @@ class GradeController {
             const data = await Grade.getClassGrade(courseId);
             const course = await Course.findOne({ where: { id: courseId }, raw: true });
 
-            const gradeStructure = JSON.parse(course.gradeStructure).gradeStructure;
+            const gradeStructure = JSON.parse(JSON.parse(course.gradeStructure).gradeStructure);
 
             var currIndex = -1;
             var returnData = [];
@@ -68,13 +68,14 @@ class GradeController {
                 if (score < 0) score = "";
 
                 if (!returnData.length || returnData[currIndex].student_id !== student_id) {
-                    returnData = addRemainingGrastrutureElement(returnData, gradeStructure, gradeStructureId, currIndex);
+                    returnData = addRemainingGrastrutureElement(returnData, gradeStructure, currIndex);
                     returnData.push({ student_id, [gradeStructureId]: { score, isFinal }, ...other });
                     currIndex++;
                 } else {
                     returnData[currIndex][`${gradeStructureId}`] = { score, isFinal };
                 }
             });
+            returnData = addRemainingGrastrutureElement(returnData, gradeStructure, currIndex);
 
             res.status(200).send(returnData);
         } catch (error) {
@@ -255,7 +256,7 @@ const checkIfExistedStudentGradeItem = async (gradeId, gradeStructureId) => {
     return gradeItem;
 }
 
-const addRemainingGrastrutureElement = (returnData, gradeStructure, gradeStructureId, currIndex) => {
+const addRemainingGrastrutureElement = (returnData, gradeStructure, currIndex) => {
     if (returnData.length) {
         gradeStructure.forEach(e => {
             if (!returnData[currIndex][`${e.id}`]) {

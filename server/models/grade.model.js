@@ -57,7 +57,8 @@ Grade.getClassGrade = async (courseId) => {
          ON grade.id = grade_item.grade_id
        LEFT JOIN account
          ON account.student_id = grade.student_id
-    WHERE grade.course_id = ?`
+    WHERE grade.course_id = ?
+    order by student_id`
 
     return sequelize.query(selectQuery, {
         replacements: [courseId],
