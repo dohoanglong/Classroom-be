@@ -15,6 +15,18 @@ router.post(
     GradereviewController.remove
 )
 
+router.post(
+    '/updateScoreAndStatus',
+    passport.authenticate('jwt', { session: false }),
+    GradereviewController.updateScoreAndStatus
+)
+
+router.post(
+    '/addComment',
+    passport.authenticate('jwt', { session: false }),
+    GradereviewController.addComment
+)
+
 router.get(
     '/get/:gradeReviewId',
     passport.authenticate('jwt', { session: false }),

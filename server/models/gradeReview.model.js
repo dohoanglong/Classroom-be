@@ -35,6 +35,11 @@ var GradeReview = sequelize.define(
             type: Sequelize.STRING,
             field: 'explanation',
         },
+        status: {
+            allowNull: false,
+            type: Sequelize.STRING(7),
+            field: 'status',
+        },
         createdAt: {
             allowNull: false,
             type: Sequelize.DATE,
@@ -76,7 +81,7 @@ GradeReview.getAll = async (courseId) => {
     })
 }
 
-GradeReview.getOne = async (courseId) => {
+GradeReview.getDetail = async (courseId) => {
     const selectQuery = `
     SELECT account.id,
        grade.student_id,

@@ -13,6 +13,7 @@ import courseRoute from './routes/course.route'
 import authRoute from './routes/auth.route'
 import userRoute from './routes/user.route'
 import gradeRoute from './routes/grade.route'
+import gradeReviewRoute from './routes/gradeReview.route'
 import adminRoute from './routes/admin.route'
 
 dotenv.config()
@@ -38,12 +39,13 @@ app.use('/courses', courseRoute)
 app.use('/auth', authRoute)
 app.use('/user', userRoute)
 app.use('/grade', gradeRoute)
+app.use('/gradeReview', gradeReviewRoute)
 app.use('/admin', adminRoute)
 app.use('/', indexRouter)
 
 app.use('/', (err, req, res) => {
     console.error(err)
-    res.send('Something broke!')
+    //res.send('Something broke!')
 })
 
 var port = process.env.PORT || 8080
