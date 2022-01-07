@@ -39,7 +39,7 @@ class GradereviewController {
 
     static updateScoreAndStatus = async (req, res) => {
         try {
-            const isTeacher = await checkIfTeacherOfClass(req.user.id, req.params.courseId);
+            const isTeacher = await checkIfTeacherOfClass(req.user.id, req.body.courseId);
             if (!isTeacher) {
                 res.status(200).send({ message: "only teacher can view all grade review of class" });
                 return;
