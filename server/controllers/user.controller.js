@@ -155,8 +155,8 @@ class UserController {
         try {
             var users = await User.getUsersInClass(req.body.courseId)
             const filter = req.body.filter
-
             //filter by role and exclude distinct cloumn
+            if(filter)
             users = users.reduce(
                 (filtered, { row, ...newUser }) =>
                     newUser.role === filter
@@ -164,6 +164,7 @@ class UserController {
                         : filtered,
                 []
             )
+        
 
             res.send({ users: users })
         } catch (error) {

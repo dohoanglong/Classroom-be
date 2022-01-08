@@ -14,10 +14,11 @@ router.post(
                     return next(err)
                 }
                 if (!user) {
-                    res.status(401)
+                    res.status(400)
                     res.end(info.message)
                     return
                 }
+                req.user = user
                 next()
             }
         )(req, res, next)
@@ -73,16 +74,20 @@ router.get('/getAllAdmins',
     passport.authenticate('jwt', { session: false }),
     AdminController.getAllAdmins);
 
-router.get('/banUser/:userId',
+router.post('/banUser',
     passport.authenticate('jwt', { session: false }),
     AdminController.banUser);
 
-router.get('/unbanUser/:userId',
+router.post('/unbanUser',
     passport.authenticate('jwt', { session: false }),
     AdminController.unbanUser);
 
 router.post('/toggleStudentId',
     passport.authenticate('jwt', { session: false }),
     AdminController.toggleStudentId);
+
+    router.get('/',
+    passport.authenticate('jwt', { session: false }),
+    AdminController.getInforAdmin);
 
 export default router;
