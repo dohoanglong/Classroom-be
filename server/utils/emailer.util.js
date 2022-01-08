@@ -1,12 +1,15 @@
 import nodeMailer from 'nodemailer'
 import jwt from 'jsonwebtoken'
-import prettylink from 'prettylink'
+// import prettylink from 'prettylink'
+import dotenv from 'dotenv'
+dotenv.config()
 
 const adminEmail = 'emailsenderfromhcmus@gmail.com'
 const adminPassword = 'adminAdm1n'
 const mailHost = 'smtp.gmail.com'
 const mailPort = 465
-const localHost = 'https://classroom-manager.netlify.app/'
+// const url = process.env.NODE_ENV === 'development'
+//     ? process.env.REACT_APP_CLIENT_LOCAL : process.env.REACT_APP_CLIENT_PRODUCTION
 const transporter = nodeMailer.createTransport({
     auth: {
         user: adminEmail,
@@ -35,34 +38,38 @@ export const generateInvitationLinkSendViaEmail = async ({
     courseId,
     teacherId,
     role,
-}) => {
+}, url) => {
     const token = generate(email, courseId, teacherId, role)
-    const bitly = new prettylink.Bitly(process.env.BITLY_SECRET_KEY)
-    var link = `${localHost}/courses/joinClassByLink?token=${token}`
-    try {
-        link = await bitly.short(link)
-    } catch (error) {
-        link = error.link //<<<even I dont know why xD
-    }
+
+    var link = `${url}/courses/joinClassByLink?token=${token}`
+
+    // const bitly = new prettylink.Bitly(process.env.BITLY_SECRET_KEY)
+    // try {
+    //     link = await bitly.short(link)
+    // } catch (error) {
+    //     link = error.link //<<<even I dont know why xD
+    // }
+
     return link
 }
 
-export const generateInvitationLink = async ({ courseId, teacherId }) => {
+export const generateInvitationLink = async ({ courseId, teacherId }, url) => {
     const token = generate(null, courseId, teacherId)
-    const bitly = new prettylink.Bitly(process.env.BITLY_SECRET_KEY)
-    var link = `${localHost}/courses/joinClassByLink?token=${token}`
-    try {
-        link = await bitly.short(link)
-    } catch (error) {
-        link = error.link //<<<even I dont know why xD
-    }
+    var link = `${url}/courses/joinClassByLink?token=${token}`
+    // const bitly = new prettylink.Bitly(process.env.BITLY_SECRET_KEY)
+    // try {
+    //     link = await bitly.short(link)
+    // } catch (error) {
+    //     link = error.link //<<<even I dont know why xD
+    // }
     return link
 }
 
 export const sendInvitationLink = async (req, res) => {
     const { email, name } = req.body
 
-    const invitationLink = await generateInvitationLinkSendViaEmail(req.body)
+    const url = req.get('origin');
+    const invitationLink = await generateInvitationLinkSendViaEmail(req.body, url);
     const options = {
         from: `"Hacker 🐧 " <${adminEmail}>`,
         to: email,
