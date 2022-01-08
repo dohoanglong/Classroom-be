@@ -93,7 +93,7 @@ class CourseController {
             })
 
             if (!userCourse) {
-                res.status(200).send({
+                res.status(403).send({
                     message: `you have not joined this class.`,
                 })
                 return;
