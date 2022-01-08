@@ -80,7 +80,7 @@ class GradeController {
 
                 res.status(200).send(returnData);
             } else
-                res.status(200).send({ message: "does't have grade structure" });
+                res.status(200).send([]);
         } catch (error) {
             console.log(error);
             res.status(500).send({
