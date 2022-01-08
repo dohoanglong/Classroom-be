@@ -2,13 +2,12 @@ import jwt from 'jsonwebtoken';
 import AdminAccount from '../models/adminAccount.model';
 import Course from '../models/course.model';
 import User from '../models/user.model';
+import UsersCourses from '../models/usersCourses.model';
 
 
 class AdminController {
     static create = async (req, res) => {
-        res.status(200).send({
-            message: 'Signup successful',
-        });
+        res.status(200).send(req.user);
     }
 
     static logIn = async (req, res) => {
@@ -22,6 +21,19 @@ class AdminController {
             content: { user },
             token,
         })
+    }
+
+    static getInforAdmin = async (req, res) => {
+        try {
+            const user = await AdminAccount.findOne({
+                where: { userName: req.user.userName },
+                attributes: { exclude: ['password'] },
+            })
+            res.send(user)
+        } catch (error) {
+            console.log(error)
+            res.status(500).send({ message: 'Server Error!' })
+        }
     }
 
     static getClassDetail = async (req, res) => {
@@ -56,9 +68,25 @@ class AdminController {
                 return;
             }
 
-            const courses = await Course.findAll();
+            const courses = await Course.findAll({raw:true});
 
-            res.status(200).send(courses);
+            const obj = {};
+            const userCourses = await UsersCourses.findAll({raw: true});
+            userCourses.forEach(userCourse =>  {
+                if(userCourse.studentId) {
+                    if(!obj[userCourse.courseId]) {
+                        obj[userCourse.courseId]= {countIsStudent:0,countIsTeacher:0}
+                    }
+                    obj[userCourse.courseId].countIsStudent++;
+                } else {
+                    if(!obj[userCourse.courseId]) {
+                        obj[userCourse.courseId]=  {countIsStudent:0,countIsTeacher:0}
+                    }
+                    obj[userCourse.courseId].countIsTeacher++;
+                }
+            })
+
+            res.status(200).send(courses.map(course => ({...course,countIsStudent: obj[course.id].countIsStudent || 0,countIsTeacher: obj[course.id].countIsTeacher || 0 })));
         } catch (error) {
             console.log(error);
             res.status(500).send('Server Error')
@@ -111,18 +139,34 @@ class AdminController {
 
             var users = await User.findAll({
                 attributes: { exclude: ['password'] },
+                paranoid: false,
                 raw: true
             });
-
+            const obj = {};
+            const userCourses = await UsersCourses.findAll({raw: true});
+            userCourses.forEach(userCourse =>  {
+                if(userCourse.studentId) {
+                    if(!obj[userCourse.studentId]) {
+                        obj[userCourse.studentId]= {countIsStudent:0,countIsTeacher:0}
+                    }
+                    obj[userCourse.studentId].countIsStudent++;
+                } else {
+                    if(!obj[userCourse.teacherId]) {
+                        obj[userCourse.teacherId]=  {countIsStudent:0,countIsTeacher:0}
+                    }
+                    obj[userCourse.teacherId].countIsTeacher++;
+                }
+            })
             users = users.map(user => {
                 // eslint-disable-next-line no-unused-vars
                 const { unMappedStudentId,...newUser } = user;
+                const objRet = {...newUser,countIsStudent:obj[user.id]?.countIsStudent||0,countIsTeacher:obj[user.id]?.countIsTeacher||0 }
                 if (!user.studentId && user.unMappedStudentId) {
-                    return { ...newUser, isMappedStudentId: false }
+                    objRet.isMappedStudentId = false
                 } else if (user.studentId) {
-                    return { ...newUser, isMappedStudentId: true }
+                    objRet.isMappedStudentId = true
                 }
-                return newUser;
+                return objRet;
             })
 
             res.status(200).send(users);
@@ -135,6 +179,7 @@ class AdminController {
     static banUser = async (req, res) => {
         try {
             const { userName } = req.user;
+            console.log('req.body------------',req.body.id)
 
             if (!userName || !isAdmin(userName)) {
                 res.status(200).send('You are not an admin');
@@ -143,22 +188,22 @@ class AdminController {
 
             const successValue = await User.destroy({
                 where: {
-                    id: req.params.userId,
+                    id: req.body.id,
                 },
             })
 
             if (successValue) {
-                const deletedUser = await User.findOne({
+                const deletedUser = await User.findAll({
                     attributes: { exclude: ['password'] },
                     where: {
-                        id: req.params.userId,
+                        id: req.body.id,
                     },
                     paranoid: false, // <<< It will retrieve soft-deleted record
                 })
                 res.status(200).send(deletedUser)
             } else {
                 res.status(200).send({
-                    message: `Can't found user with id ${req.params.userId}.`,
+                    message: `Can't found user with id ${req.body.id}.`,
                 })
             }
         } catch (error) {
@@ -170,22 +215,24 @@ class AdminController {
     static unbanUser = async (req, res) => {
         try {
             const { userName } = req.user;
-
+            console.log('req.body------------',req.body)
             if (!userName || !isAdmin(userName)) {
                 res.status(200).send('You are not an admin');
                 return;
             }
 
-            const user = await User.findOne({
-                where: { id: req.params.userId },
+            const users = await User.findAll({
+                where: { id: req.body.id },
                 paranoid: false,
             })
-            if (!user) {
+            if (!users) {
                 res.status(200).send({ messsage: 'User does not exist' })
                 return
             }
-            user.restore()
-            res.status(200).send({ messsage: 'User unbanned' })
+            for(let i = 0; i< users.length; ++i) {
+               await users[i].restore();
+            }
+            res.status(200).send(users)
         } catch (error) {
             console.log(error);
             res.status(500).send('Server Error')

@@ -59,25 +59,28 @@ class GradeController {
             const data = await Grade.getClassGrade(courseId);
             const course = await Course.findOne({ where: { id: courseId }, raw: true });
 
-            const gradeStructure = JSON.parse(JSON.parse(course.gradeStructure).gradeStructure);
+            if (course.gradeStructure) {
+                const gradeStructure = JSON.parse(JSON.parse(course.gradeStructure).gradeStructure);
 
-            var currIndex = -1;
-            var returnData = [];
-            data.forEach((curr) => {
-                var { student_id, gradeStructureId, score, isFinal, ...other } = curr;
-                if (score < 0) score = "";
+                var currIndex = -1;
+                var returnData = [];
+                data.forEach((curr) => {
+                    var { student_id, gradeStructureId, score, isFinal, ...other } = curr;
+                    if (score < 0) score = "";
 
-                if (!returnData.length || returnData[currIndex].student_id !== student_id) {
-                    returnData = addRemainingGrastrutureElement(returnData, gradeStructure, currIndex);
-                    returnData.push({ student_id, [gradeStructureId]: { score, isFinal }, ...other });
-                    currIndex++;
-                } else {
-                    returnData[currIndex][`${gradeStructureId}`] = { score, isFinal };
-                }
-            });
-            returnData = addRemainingGrastrutureElement(returnData, gradeStructure, currIndex);
+                    if (!returnData.length || returnData[currIndex].student_id !== student_id) {
+                        returnData = addRemainingGrastrutureElement(returnData, gradeStructure, currIndex);
+                        returnData.push({ student_id, [gradeStructureId]: { score, isFinal }, ...other });
+                        currIndex++;
+                    } else {
+                        returnData[currIndex][`${gradeStructureId}`] = { score, isFinal };
+                    }
+                });
+                returnData = addRemainingGrastrutureElement(returnData, gradeStructure, currIndex);
 
-            res.status(200).send(returnData);
+                res.status(200).send(returnData);
+            } else
+                res.status(200).send([]);
         } catch (error) {
             console.log(error);
             res.status(500).send({

@@ -46,7 +46,8 @@ app.use('/', (err, req, res) => {
     res.send('Something broke!')
 })
 
-var port = process.env.PORT || 8080
+// var port = process.env.PORT || 8080
+var port = 8082
 
 app.listen(port, function () {
     console.log('Example app listening on port ' + port + '!')
