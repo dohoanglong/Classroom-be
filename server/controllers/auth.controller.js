@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 import { verifyFb, verifyGg } from '../helpers/auth'
 import User from '../models/user.model'
+import {sendRewPassword} from '../utils/emailer.util'
 
 class AuthController {
     static register = async (req, res) => {
@@ -83,6 +84,77 @@ class AuthController {
         res.json({
             message: 'Logout successful',
         })
+    }
+
+    static renewPassword = async (req, res) => {
+        try {
+            const mail = req.body.mail;
+
+            var user = await User.findOne({ where: { mail: mail }, paranoid: false })
+            if (!user) {
+                res.status(200).send({
+                    message:
+                        `Email didn't exist`,
+                })
+                return;
+            } 
+
+            if (user?.deletedAt) {
+                res.status(200).send({ message: 'This email is banned' });
+                return;
+            }
+            const newPassword = Math.random().toString(36).slice(-8);
+
+            const hasedPass = await User.generateHash(newPassword);
+            await User.update({password:hasedPass},{ where: { mail: mail }});
+            sendRewPassword(req,res,user.name,newPassword);
+            res.status(200).send({message: "reset password successfully"});
+        } catch (error) {
+            console.log(error)
+            res.status(500).send({
+                message: 'Error server',
+            })
+        }
+    }
+
+    static changePassword = async (req, res) => {
+        try {
+            const mail = req.body.mail;
+
+            var user = await User.findOne({ where: { mail: mail }, paranoid: false })
+            if (!user) {
+                res.status(200).send({
+                    message:
+                        `Email didn't exist`,
+                })
+                return;
+            } 
+
+            if (user?.deletedAt) {
+                res.status(200).send({ message: 'This email is banned' });
+                return;
+            }
+
+            const {password, newPassword} = req.body;
+            const isValidate = await User.isValidPassword(
+                password,
+                user.password
+            )
+            if (!isValidate) {
+                res.status(200).send({message: "wrong password"});
+                return;
+            }
+
+            const hasedPass = await User.generateHash(newPassword);
+            await User.update({password:hasedPass},{ where: { mail: mail }});
+
+            res.status(200).send({message: "change password successfully"});
+        } catch (error) {
+            console.log(error)
+            res.status(500).send({
+                message: 'Error server',
+            })
+        }
     }
 }
 

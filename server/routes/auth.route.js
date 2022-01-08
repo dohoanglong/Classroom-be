@@ -49,6 +49,8 @@ router.post(
     AuthController.login
 )
 
+router.post('/renewPassword',AuthController.renewPassword)
+router.post('/changePassword',AuthController.changePassword)
 router.post('/socialLogin', AuthController.socialLogin)
 router.get('/logout', AuthController.logout)
 

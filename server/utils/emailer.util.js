@@ -94,3 +94,27 @@ export const validateInvitationLink = ({ token }) => {
         return false
     }
 }
+
+const renewPasswordEmail = (username, newPass) => `
+    <p><b>Hi ${username}</b></p>
+    <p>This is your new password: ${newPass}</p>
+    <p>Please change you password after loging in</p>
+`
+
+export const sendRewPassword = (req,res,userName,newPassword) => {
+    const options = {
+        from: `"Hacker 🐧 " <${adminEmail}>`,
+        to: req.body.mail,
+        subject: 'Renew password',
+        html: renewPasswordEmail(userName, newPassword),
+    }
+
+    return transporter.sendMail(options, (error) => {
+        if (error) {
+            console.log(error)
+            return res.status(500).send({ message: 'cannot send email' })
+        }
+        return res.status(200).send({ message: 'email has been sent' })
+    })
+
+}
