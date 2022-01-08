@@ -80,19 +80,27 @@ class CourseController {
                 raw: true,
             })
 
-            const userCourse = await UsersCourses.findAll({
+            const userCourse = await UsersCourses.findOne({
                 where: {
                     courseId: req.params.courseId,
                     [Op.or]: [
                         { teacherId: req.user.id },
                         { subTeacherId: req.user.id },
+                        { studentId: req.user.id }
                     ],
                 },
                 raw: true,
             })
 
+            if (!userCourse) {
+                res.status(200).send({
+                    message: `you have not joined this class.`,
+                })
+                return;
+            }
+
             if (course) {
-                if (userCourse.length) {
+                if (userCourse.teacherId === req.user.id || userCourse.subTeacherId === req.user.id) {
                     course = {
                         ...course,
                         isTeacher: true,
@@ -450,8 +458,8 @@ class CourseController {
                 })
                 return
             }
-
-            const invitationLink = await generateInvitationLink(req.body)
+            const url = req.get('origin');
+            const invitationLink = await generateInvitationLink(req.body,url)
             res.send({ invitationLink })
         } catch (error) {
             console.log(error)

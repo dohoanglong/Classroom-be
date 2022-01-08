@@ -13,7 +13,7 @@
         "clean": "rimraf dist-server",
         "watch:dev": "set NODE_ENV=development & nodemon",
         "db:create": "sequelize-cli db:create",
-        "debug": "npm start --debug",
+        "debug": "NODE_ENV=development npm start --debug",
         "pretty": "prettier --write \"./**/*.{js,jsx,json}\"",
         "lint": "eslint ./"
     },
