@@ -27,8 +27,7 @@ class GradereviewController {
     static get = async (req, res) => {
         try {
             const gradeReview = await GradeReview.findByPk(req.params.gradeReviewId);
-            const comments = await GradeReviewReply.findAll(
-                { where: { gradeReviewId: gradeReview.id }, raw: true });
+            const comments = await GradeReviewReply.getAll(gradeReview.id);
 
             res.status(200).send({ gradeReview, comments });
         } catch (error) {
@@ -51,8 +50,7 @@ class GradereviewController {
                     raw: true
                 }
             );
-            const comments = await GradeReviewReply.findAll(
-                { where: { gradeReviewId: gradeReview.id }, raw: true });
+            const comments = await GradeReviewReply.getAll(gradeReview.id);
 
             res.status(200).send({ gradeReview, comments });
         } catch (error) {
