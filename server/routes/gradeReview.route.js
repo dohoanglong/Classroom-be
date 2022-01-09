@@ -33,6 +33,12 @@ router.get(
     GradereviewController.get
 )
 
+router.post(
+    '/get',
+    passport.authenticate('jwt', { session: false }),
+    GradereviewController.getGradeReviewForStudent
+)
+
 router.get(
     '/getAll/:courseId',
     passport.authenticate('jwt', { session: false }),
