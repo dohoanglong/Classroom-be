@@ -142,9 +142,10 @@ class UserController {
         try {
             const user = await User.findOne({
                 where: { mail: req.user.email },
-                attributes: { exclude: ['password'] },
+                raw:true
             })
-            res.send(user)
+            const { password, ...rest } = user;
+            res.send({...rest,isSocial: !password})
         } catch (error) {
             console.log(error)
             res.status(500).send({ message: 'Server Error!' })

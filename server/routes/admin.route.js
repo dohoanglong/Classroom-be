@@ -14,8 +14,8 @@ router.post(
                     return next(err)
                 }
                 if (!user) {
-                    res.status(400)
-                    res.end(info.message)
+                    res.status(200).send(info)
+                    // res.end(info.message)
                     return
                 }
                 req.user = user
@@ -37,8 +37,8 @@ router.post(
                     return next(err)
                 }
                 if (!user) {
-                    res.status(401)
-                    res.end(info.message)
+                    res.status(200).send(info)
+                    // res.end(info.message)
                     return
                 }
                 req.user = user.dataValues

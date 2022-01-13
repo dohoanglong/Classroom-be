@@ -7,6 +7,7 @@ class AuthController {
     static register = async (req, res) => {
         res.status(200).json({
             message: 'Signup successful',
+            result: 1
         })
     }
 
@@ -46,14 +47,14 @@ class AuthController {
                         req.body.mail
                     )
                 } else if (user.deletedAt) {
-                    res.send({ message: 'This account is banned' });
+                    res.status(200).send({ message: 'This account is banned' });
                     return;
                 }
 
                 req.user = user
                 this.login(req, res)
             } else {
-                res.status(400).send({
+                res.status(200).send({
                     message: 'Invalid token',
                 })
             }
@@ -119,9 +120,9 @@ class AuthController {
 
     static changePassword = async (req, res) => {
         try {
-            const mail = req.body.mail;
+            const mail = req.user.email;
 
-            var user = await User.findOne({ where: { mail: mail }, paranoid: false })
+            var user = await User.findOne({ where: { mail }, paranoid: false })
             if (!user) {
                 res.status(200).send({
                     message:

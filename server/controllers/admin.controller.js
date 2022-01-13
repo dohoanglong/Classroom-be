@@ -7,7 +7,7 @@ import UsersCourses from '../models/usersCourses.model';
 
 class AdminController {
     static create = async (req, res) => {
-        res.status(200).send(req.user);
+        res.status(200).send({user: req.user, result: 1});
     }
 
     static logIn = async (req, res) => {

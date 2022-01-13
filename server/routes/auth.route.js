@@ -14,8 +14,8 @@ router.post(
                     return next(err)
                 }
                 if (!user) {
-                    res.status(401)
-                    res.end(info.message)
+                    res.status(200).send(info)
+                    // res.end(info)
                     return
                 }
                 next()
@@ -36,8 +36,8 @@ router.post(
                     return next(err)
                 }
                 if (!user) {
-                    res.status(401)
-                    res.end(info.message)
+                    res.status(200).send(info)
+                    // res.end(info)
                     return
                 }
                 req.user = user.dataValues
@@ -50,7 +50,7 @@ router.post(
 )
 
 router.post('/renewPassword',AuthController.renewPassword)
-router.post('/changePassword',AuthController.changePassword)
+router.post('/changePassword',passport.authenticate('jwt', { session: false }) ,AuthController.changePassword)
 router.post('/socialLogin', AuthController.socialLogin)
 router.get('/logout', AuthController.logout)
 
