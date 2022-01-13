@@ -42,4 +42,26 @@ var GradeReviewReply = sequelize.define(
     }
 )
 
+GradeReviewReply.getAll = async (gradeReviewId) => {
+    const selectQuery = `
+    select
+    grade_review_reply.*,
+    account.name,
+    (CASE WHEN grade_review.student_id = grade_review_reply.user_id THEN 'Student'
+              ELSE 'Teacher' END) AS role
+from
+    grade_review_reply
+    join account on account.id = grade_review_reply.user_id
+    join grade_review on grade_review.id = grade_review_reply.grade_review_id
+where
+    grade_review_reply.grade_review_id = ?`
+
+    return sequelize.query(selectQuery, {
+        replacements: [gradeReviewId],
+        model: GradeReviewReply,
+        mapToModel: true,
+        raw: true,
+    })
+}
+
 export default GradeReviewReply;

@@ -27,10 +27,32 @@ class GradereviewController {
     static get = async (req, res) => {
         try {
             const gradeReview = await GradeReview.findByPk(req.params.gradeReviewId);
-            const comments = await GradeReviewReply.findAll(
-                { where: { gradeReviewId: gradeReview.id }, raw: true });
+            const comments = await GradeReviewReply.getAll(gradeReview.id);
 
-            res.status(200).send({ gradeReview, comments});
+            res.status(200).send({ gradeReview, comments });
+        } catch (error) {
+            console.log(error);
+            res.status(500).send("Something wrong");
+        }
+    }
+
+    static getGradeReviewForStudent = async (req, res) => {
+        try {
+            const userId = req.user.id;
+            const { courseId, gradeItemId } = req.body;
+            const gradeReview = await GradeReview.findOne(
+                {
+                    where: {
+                        courseId,
+                        studentId: userId,
+                        gradeItemId
+                    },
+                    raw: true
+                }
+            );
+            const comments = await GradeReviewReply.getAll(gradeReview.id);
+
+            res.status(200).send({ gradeReview, comments });
         } catch (error) {
             console.log(error);
             res.status(500).send("Something wrong");
