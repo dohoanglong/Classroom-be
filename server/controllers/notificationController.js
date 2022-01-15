@@ -3,6 +3,7 @@ import Notification from "../models/notification.model";
 import Course from "../models/course.model";
 import GradeItem from "../models/gradeItem.model";
 import UserCourses from "../models/usersCourses.model";
+import { Op } from 'sequelize'
 
 const mapMessageType = {
     1: 'finalized your grade composition at',
@@ -26,6 +27,46 @@ class NotificationController {
             await Notification.create({ type,userId, message,courseId: course.id, readed: false });
             next();
             // res.status(200).send({ message: "success",notification });
+        } catch (error) {
+            console.log(error);
+            res.status(500).send("Something wrong");
+        }
+    }
+
+    static getAllNotification = async (req,res) => {
+        try {
+            const notifications = await Notification.findAll({where:{userId: req.user.id}});
+            console.log(req.user, notifications,'```````````````````````````````````````````.---------')
+            res.status(200).send({result: 1, notifications});
+        } catch (e) {
+            res.status(500).send("Something wrong");
+        }
+    } 
+
+    static markReadedAll = async (req,res) => {
+        try {
+            const notifications = await Notification.update({readed: true},{where:{userId: req.user.id}});
+            res.status(200).send({result: 1, notifications});
+        } catch (e) {
+            res.status(500).send("Something wrong");
+        }
+    } 
+
+    static createFinalizedNotifications = async (req, res) => {
+        try {
+            const {title,courseId} = req.body;
+            const course = await Course.findOne({id: courseId });
+            const userSend = await User.findOne({where:{id: req.user.id}, raw:true});
+            const message = convertToMessage(1, userSend.name,title,course.name);
+            const students = await UserCourses.findAll({where: {
+                courseId,
+                studentId: {
+                    [Op.not]: null
+                }
+            },raw: true})
+            await Notification.bulkCreate(students.map(student => ({ type: 1,userId: student.studentId, message,courseId, readed: false })))
+     
+            res.status(200).send({ message: "success" });
         } catch (error) {
             console.log(error);
             res.status(500).send("Something wrong");
