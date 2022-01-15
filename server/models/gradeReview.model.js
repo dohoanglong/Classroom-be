@@ -15,6 +15,11 @@ var GradeReview = sequelize.define(
             type: Sequelize.INTEGER,
             field: 'course_id',
         },
+        userId: {
+            allowNull: false,
+            type: Sequelize.INTEGER,
+            field: 'user_id',
+        },
         studentId: {
             allowNull: false,
             type: Sequelize.INTEGER,
