@@ -101,9 +101,7 @@ class GradereviewController {
                 return;
             }
 
-            const gradeReviews = await GradeReview.findAll({
-                where: { courseId: req.params.courseId }
-            });
+            const gradeReviews = await GradeReview.getAll(req.params.courseId);
            
             res.status(200).send(gradeReviews);
         } catch (error) {
