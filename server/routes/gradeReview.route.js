@@ -45,4 +45,9 @@ router.get(
     GradereviewController.getAll
 )
 
+router.get(
+    '/getAllOf/:courseId',
+    passport.authenticate('jwt', { session: false }),
+    GradereviewController.getAllOf
+)
 export default router;

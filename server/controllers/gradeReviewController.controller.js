@@ -141,6 +141,21 @@ class GradereviewController {
             res.status(500).send("Something wrong");
         }
     }
+
+    static getAllOf = async (req, res) => {
+        try {
+           
+
+            const gradeReviews = await GradeReview.findAll({
+                where: { courseId: req.params.courseId, userId: req.user.id }
+            });
+           
+            res.status(200).send(gradeReviews);
+        } catch (error) {
+            console.log(error);
+            res.status(500).send("Something wrong");
+        }
+    }
 }
 
 const checkIfTeacherOfClass = async (userId, courseId) => {
