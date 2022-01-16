@@ -72,7 +72,7 @@ export const generateInvitationLinkSendViaEmail = async ({
 }, url) => {
     const token = generate(email, courseId, teacherId, role)
 
-    var link = `${url}/courses/joinClassByLink?token=${token}`
+    var link = `${url}/courses/joinClass?token=${token}`
 
     // const bitly = new prettylink.Bitly(process.env.BITLY_SECRET_KEY)
     // try {
