@@ -48,7 +48,7 @@ class GradereviewController {
     static get = async (req, res) => {
         try {
             const gradeReview = await GradeReview.getDetailById(req.params.gradeReviewId);
-            const comments = await GradeReviewReply.getAll(gradeReview.id);
+            const comments = await GradeReviewReply.getAll(gradeReview[0].id);
 
             res.status(200).send({ gradeReview, comments });
         } catch (error) {
