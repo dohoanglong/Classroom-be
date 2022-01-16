@@ -55,7 +55,7 @@ var User = sequelize.define(
     },
     {
         freezeTableName: true, // Model tableName will be the same as the model name
-        paranoid: true // <<< Apply soft-deleted record
+        paranoid: true, // <<< Apply soft-deleted record
     }
 )
 
@@ -74,6 +74,7 @@ User.getUsersInClass = async (courseId) => {
         users_courses.course_id,
         account.name,
         account.mail,
+        account.student_id,
         (CASE WHEN account.id = users_courses.student_id THEN 'student'
               WHEN account.id = users_courses.teacher_id THEN 'teacher'
               WHEN account.id = users_courses.subteacher_id THEN 'sub-teacher' END) AS role
