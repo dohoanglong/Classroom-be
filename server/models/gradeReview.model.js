@@ -128,4 +128,25 @@ GradeReview.getDetail = async (courseId) => {
     })
 }
 
+GradeReview.getAllOf = async (courseId, studentId) => {
+    const selectQuery = `select
+    grade_review.*,
+    account.name,
+    grade_item.title
+from
+    grade_review
+    join grade_item on  grade_item.id = grade_review.grade_item_id
+    join account on account.id = grade_review.user_id 
+where
+    grade_review.course_id = ?
+    and account.id = ?`
+
+    return sequelize.query(selectQuery, {
+        replacements: [courseId,studentId],
+        model: GradeReview,
+        mapToModel: true,
+        raw: true,
+    })
+}
+
 export default GradeReview;
