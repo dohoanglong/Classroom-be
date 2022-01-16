@@ -69,8 +69,8 @@ GradeReview.getAll = async (courseId) => {
     grade_item.title
 from
     grade_review
-    join account on account.id = grade_review.user_id
-    join grade_item on grade_item.grade_id=grade_review.grade_item_id
+    join grade_item on  grade_item.id = grade_review.grade_item_id
+    join account on account.id = grade_review.user_id 
 where
     grade_review.course_id = ?`
 
