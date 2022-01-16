@@ -30,6 +30,7 @@
         "dotenv": "^10.0.0",
         "express": "~4.16.1",
         "google-auth-library": "^7.10.2",
+        "googleapis": "^92.0.0",
         "jsonwebtoken": "^8.5.1",
         "morgan": "~1.9.1",
         "mysql": "^2.18.1",
