@@ -16,7 +16,7 @@ class GradereviewController {
                 raw: true
             });
 
-            if(gradeReview) {
+            if (gradeReview) {
                 res.status(200).send({ message: "already had" });
                 return;
             }
@@ -100,8 +100,10 @@ class GradereviewController {
             req.userIdReceive = gradeReview[1].userId;
             await NotificationController.add(req, res, next)
 
-            await GradeItem.update({ score: newScore },
-                { where: { id: gradeReview[1].gradeItemId } });
+            if (newScore) {
+                await GradeItem.update({ score: newScore },
+                    { where: { id: gradeReview[1].gradeItemId } });
+            }
             res.status(200).send({ message: "success" });
         } catch (error) {
             console.log(error);
