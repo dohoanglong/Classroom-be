@@ -87,7 +87,8 @@ GradeReview.getDetailById = async (id) => {
     select
     grade_review.*,
     account.name,
-    grade_item.title
+    grade_item.title,
+    grade_item.score as currentScore
 from
     grade_review
     join grade_item on  grade_item.id = grade_review.grade_item_id
