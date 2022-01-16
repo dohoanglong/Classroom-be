@@ -20,6 +20,16 @@ const transporter = nodeMailer.createTransport({
     secure: true,
 })
 
+export const sendMail = (email,subject,content) => {
+    const options = {
+        from: `"Hacker 🐧 " <${adminEmail}>`,
+        to: email,
+        subject: subject,
+        html: content,
+    }
+    return transporter.sendMail(options)
+}
+
 const emailTemplate = (username, link) => `
     <p><b>From ${username}</b></p>
     <p>Click the link to join class: ${link}</p>

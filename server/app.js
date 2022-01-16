@@ -16,6 +16,7 @@ import gradeRoute from './routes/grade.route'
 import gradeReviewRoute from './routes/gradeReview.route'
 import adminRoute from './routes/admin.route'
 import notificationRoute from './routes/notification.route'
+import otpRoute from './routes/otp.route'
 
 dotenv.config()
 sequelize.sync()
@@ -43,6 +44,7 @@ app.use('/grade', gradeRoute)
 app.use('/gradeReview', gradeReviewRoute)
 app.use('/admin', adminRoute)
 app.use('/notification', notificationRoute)
+app.use('/otp', otpRoute)
 app.use('/', indexRouter)
 
 app.use('/', (err, req, res) => {
