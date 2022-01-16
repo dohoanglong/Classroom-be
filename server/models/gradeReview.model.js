@@ -63,13 +63,14 @@ var GradeReview = sequelize.define(
 )
 
 GradeReview.getAll = async (courseId) => {
-    const selectQuery = `
-    select
+    const selectQuery = `select
     grade_review.*,
-    account.name
+    account.name,
+    grade_item.title
 from
     grade_review
     join account on account.id = grade_review.user_id
+    join grade_item on grade_item.grade_id=grade_review.grade_item_id
 where
     grade_review.course_id = ?`
 
