@@ -82,6 +82,27 @@ where
     })
 }
 
+GradeReview.getDetailById = async (id) => {
+    const selectQuery = `
+    select
+    grade_review.*,
+    account.name,
+    grade_item.title
+from
+    grade_review
+    join grade_item on  grade_item.id = grade_review.grade_item_id
+    join account on account.id = grade_review.user_id 
+where
+    grade_review.id = ?`
+
+    return sequelize.query(selectQuery, {
+        replacements: [id],
+        model: GradeReview,
+        mapToModel: true,
+        raw: true,
+    })
+}
+
 GradeReview.getDetail = async (courseId) => {
     const selectQuery = `
     SELECT account.id,
