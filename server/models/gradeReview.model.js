@@ -63,23 +63,40 @@ var GradeReview = sequelize.define(
 )
 
 GradeReview.getAll = async (courseId) => {
-    const selectQuery = `
-    SELECT account.id,
-       grade.student_id,
-       grade.student_name,
-       grade_item.grade_structure_id,
-       grade_item.title,
-       grade_item.score,
-       grade_item.is_final
-    FROM grade_item
-       JOIN grade
-         ON grade.id = grade_item.grade_id
-       LEFT JOIN account
-         ON account.student_id = grade.student_id
-    WHERE grade.course_id = ?`
+    const selectQuery = `select
+    grade_review.*,
+    account.name,
+    grade_item.title
+from
+    grade_review
+    join grade_item on  grade_item.id = grade_review.grade_item_id
+    join account on account.id = grade_review.user_id 
+where
+    grade_review.course_id = ?`
 
     return sequelize.query(selectQuery, {
         replacements: [courseId],
+        model: GradeReview,
+        mapToModel: true,
+        raw: true,
+    })
+}
+
+GradeReview.getDetailById = async (id) => {
+    const selectQuery = `
+    select
+    grade_review.*,
+    account.name,
+    grade_item.title
+from
+    grade_review
+    join grade_item on  grade_item.id = grade_review.grade_item_id
+    join account on account.id = grade_review.user_id 
+where
+    grade_review.id = ?`
+
+    return sequelize.query(selectQuery, {
+        replacements: [id],
         model: GradeReview,
         mapToModel: true,
         raw: true,

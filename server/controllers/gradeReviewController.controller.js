@@ -5,15 +5,29 @@ import UsersCourses from "../models/usersCourses.model";
 import NotificationController from './notificationController'
 
 class GradereviewController {
-    static add = async (req, res,next) => {
+    static add = async (req, res, next) => {
         try {
+            const { gradeItemId, studentId, courseId } = req.body;
+            const gradeReview = await GradeReview.findOne({
+                where: {
+                    gradeItemId, studentId, courseId,
+                    status: "pending"
+                },
+                raw: true
+            });
+
+            if(gradeReview) {
+                res.status(200).send({ message: "already had" });
+                return;
+            }
+
             await GradeReview.create({ ...req.body, status: "pending", userId: req.user.id });
 
             // Create Notification
-            const userCourse = await UsersCourses.findOne({studentId: req.user.id});
-            req.type=4;
+            const userCourse = await UsersCourses.findOne({ studentId: req.user.id });
+            req.type = 4;
             req.userIdReceive = userCourse.teacherId
-            await NotificationController.add(req, res,next)
+            await NotificationController.add(req, res, next)
             res.status(200).send({ message: "success" });
         } catch (error) {
             console.log(error);
@@ -33,7 +47,7 @@ class GradereviewController {
 
     static get = async (req, res) => {
         try {
-            const gradeReview = await GradeReview.findByPk(req.params.gradeReviewId);
+            const gradeReview = await GradeReview.getDetailById(req.params.gradeReviewId);
             const comments = await GradeReviewReply.getAll(gradeReview.id);
 
             res.status(200).send({ gradeReview, comments });
@@ -66,7 +80,7 @@ class GradereviewController {
         }
     }
 
-    static updateScoreAndStatus = async (req, res,next) => {
+    static updateScoreAndStatus = async (req, res, next) => {
         try {
             const isTeacher = await checkIfTeacherOfClass(req.user.id, req.body.courseId);
             if (!isTeacher) {
@@ -75,15 +89,17 @@ class GradereviewController {
             }
             const { status, gradeReviewId, newScore } = req.body;
             const gradeReview = await GradeReview.update({ status: status },
-                { where: { id: gradeReviewId },returning: true,raw:true,
-                plain: true });
+                {
+                    where: { id: gradeReviewId }, returning: true, raw: true,
+                    plain: true
+                });
 
-                // Notification
+            // Notification
             req.body.gradeItemId = gradeReview[1].gradeItemId;
             req.type = 3;
             req.userIdReceive = gradeReview[1].userId;
-            await NotificationController.add(req,res,next)
-            
+            await NotificationController.add(req, res, next)
+
             await GradeItem.update({ score: newScore },
                 { where: { id: gradeReview[1].gradeItemId } });
             res.status(200).send({ message: "success" });
@@ -101,10 +117,8 @@ class GradereviewController {
                 return;
             }
 
-            const gradeReviews = await GradeReview.findAll({
-                where: { courseId: req.params.courseId }
-            });
-           
+            const gradeReviews = await GradeReview.getAll(req.params.courseId);
+
             res.status(200).send(gradeReviews);
         } catch (error) {
             console.log(error);
@@ -112,7 +126,7 @@ class GradereviewController {
         }
     }
 
-    static addComment = async (req, res,next) => {
+    static addComment = async (req, res, next) => {
         try {
             const gradeReview = await GradeReview.findOne({
                 where: { id: req.body.gradeReviewId }
@@ -124,16 +138,16 @@ class GradereviewController {
             const userId = req.user.id;
             // Create Notification
             req.body.gradeItemId = gradeReview.gradeItemId;
-            const userCourse = await UsersCourses.findOne({studentId: req.user.id});
-            const isTeacher = await checkIfTeacherOfClass(req.user.id,req.body.courseId);
-            if(!isTeacher) {
+            const userCourse = await UsersCourses.findOne({ studentId: req.user.id });
+            const isTeacher = await checkIfTeacherOfClass(req.user.id, req.body.courseId);
+            if (!isTeacher) {
                 req.type = 5;
 
             } else {
                 req.type = 2;
             }
-            req.userIdReceive = !isTeacher ? userCourse.teacherId :gradeReview.userId;
-            await NotificationController.add(req,res,next)
+            req.userIdReceive = !isTeacher ? userCourse.teacherId : gradeReview.userId;
+            await NotificationController.add(req, res, next)
             await GradeReviewReply.create({ ...req.body, userId });
             res.status(200).send({ message: "success" });
         } catch (error) {
@@ -144,12 +158,12 @@ class GradereviewController {
 
     static getAllOf = async (req, res) => {
         try {
-           
+
 
             const gradeReviews = await GradeReview.findAll({
                 where: { courseId: req.params.courseId, userId: req.user.id }
             });
-           
+
             res.status(200).send(gradeReviews);
         } catch (error) {
             console.log(error);
