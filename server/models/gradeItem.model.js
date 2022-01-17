@@ -53,3 +53,23 @@ var GradeItem = sequelize.define(
 )
 
 export default GradeItem
+
+GradeItem.getInfor = async (gradeItemId) => {
+    const selectQuery = `select
+    grade_item.title,
+    course.name,
+    course.id as courseId
+from
+    grade_item
+    join grade on  grade_item.grade_id = grade.id
+    join course on grade.course_id = course.id 
+where
+    grade_item.id = ?`
+
+    return sequelize.query(selectQuery, {
+        replacements: [gradeItemId],
+        model: GradeItem,
+        mapToModel: true,
+        raw: true,
+    })
+}

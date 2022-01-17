@@ -3,6 +3,7 @@ import GradeReview from '../models/gradeReview.model'
 import GradeReviewReply from '../models/gradeReviewReply.model'
 import UsersCourses from '../models/usersCourses.model'
 import NotificationController from './notificationController'
+import { Op } from 'sequelize'
 
 class GradereviewController {
     static add = async (req, res, next) => {
@@ -112,7 +113,6 @@ class GradereviewController {
                     plain: true,
                 }
             )
-
             // Notification
             req.body.gradeItemId = gradeReview[1].gradeItemId
             req.type = 3
@@ -211,8 +211,8 @@ const checkIfTeacherOfClass = async (userId, courseId) => {
     const userCourse = await UsersCourses.findOne({
         where: {
             courseId: courseId,
-            // [Op.or]: [{ teacherId: userId }, { subTeacherId: userId }],
-            teacherId: userId,
+            [Op.or]: [{ teacherId: userId }, { subTeacherId: userId }],
+            // teacherId: userId,
         },
         raw: true,
     })
