@@ -42,7 +42,7 @@ class AuthController {
                 })
 
                 if (!user) {
-                    user = this.createSocialAccount(
+                    user = await this.createSocialAccount(
                         req.body.name,
                         req.body.mail
                     )
