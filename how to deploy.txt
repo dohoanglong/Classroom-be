@@ -1,0 +1,6 @@
+1.heroku local web
+2. git add.
+3. git commit -m "something"
+4. heroku login 
+5. heroku create
+6. git push heroku main
