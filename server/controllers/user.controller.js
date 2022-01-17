@@ -141,7 +141,7 @@ class UserController {
     static getUserDetail = async (req, res) => {
         try {
             const user = await User.findOne({
-                where: { mail: req.user.mail },
+                where: { mail: req.user.email },
                 raw:true
             })
             const { password, ...rest } = user;
