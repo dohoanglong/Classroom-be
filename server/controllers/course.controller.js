@@ -146,7 +146,7 @@ class CourseController {
 
             if (!userCourse.length) {
                 res.status(200).send({
-                    messsage: 'Only teachers are allowed to edit',
+                    message: 'Only teachers are allowed to edit',
                 })
                 return
             }
@@ -210,11 +210,11 @@ class CourseController {
                 paranoid: false,
             })
             if (!course) {
-                res.status(200).send({ messsage: 'Course does not exist' })
+                res.status(200).send({ message: 'Course does not exist' })
                 return
             }
             course.restore()
-            res.status(200).send({ messsage: 'Course has been restored' })
+            res.status(200).send({ message: 'Course has been restored' })
         } catch (error) {
             console.log(error)
             res.status(500).send({
@@ -229,7 +229,7 @@ class CourseController {
             const { id: userId, email: userEmail } = req.user
 
             if (userEmail === email) {
-                res.status(200).send({ messsage: 'You already in this class' })
+                res.status(200).send({ message: 'You already in this class' })
                 return
             }
 
@@ -243,7 +243,7 @@ class CourseController {
 
             if (!userCourse.length) {
                 res.status(200).send({
-                    messsage: 'You are not teacher of this class',
+                    message: 'You are not teacher of this class',
                 })
                 return
             }
@@ -256,14 +256,14 @@ class CourseController {
             })
             if (!targetUser) {
                 res.status(200).send({
-                    messsage: 'This user did not register yet',
+                    message: 'This user did not register yet',
                 })
                 return
             }
             const course = await Course.findByPk(courseId)
 
             if (!course) {
-                res.status(200).send({ messsage: 'Class does not exist' })
+                res.status(200).send({ message: 'Class does not exist' })
                 return
             }
 
@@ -276,7 +276,7 @@ class CourseController {
 
             if (usersCourse) {
                 res.status(200).send({
-                    messsage: 'This user already joined this class',
+                    message: 'This user already joined this class',
                 })
                 return
             }
@@ -304,7 +304,7 @@ class CourseController {
 
                 if (!user) {
                     res.status(200).send({
-                        messsage: 'This user does not exist',
+                        message: 'This user does not exist',
                     })
                     return
                 }
@@ -321,7 +321,7 @@ class CourseController {
 
                 if (usersCourse) {
                     res.status(200).send({
-                        messsage: 'This user already joined this class',
+                        message: 'This user already joined this class',
                     })
                     return
                 }
@@ -392,7 +392,7 @@ class CourseController {
 
                 if (!user) {
                     res.status(200).send({
-                        messsage: 'This user did not register yet',
+                        message: 'This user did not register yet',
                     })
                     return
                 }
@@ -407,7 +407,7 @@ class CourseController {
 
                 if (usersCourse) {
                     res.status(200).send({
-                        messsage: 'This user already joined this class',
+                        message: 'This user already joined this class',
                     })
                     return
                 }
@@ -454,7 +454,7 @@ class CourseController {
 
             if (!userCourse.length) {
                 res.status(200).send({
-                    messsage: 'You are not teacher of this class',
+                    message: 'You are not teacher of this class',
                 })
                 return
             }
@@ -486,7 +486,7 @@ class CourseController {
 
             if (!userCourse.length) {
                 res.status(200).send({
-                    messsage:
+                    message:
                         'Only teachers are allowed to edit grade structure',
                 })
                 return
@@ -532,7 +532,7 @@ class CourseController {
 
             if (!userCourse.length) {
                 res.status(200).send({
-                    messsage:
+                    message:
                         'Only teachers are allowed to view grade structure',
                 })
                 return
@@ -546,7 +546,7 @@ class CourseController {
             })
 
             if (!course) {
-                res.status(200).send({ messsage: 'Cannot find class' })
+                res.status(200).send({ message: 'Cannot find class' })
                 return
             }
 

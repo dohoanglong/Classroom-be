@@ -56,10 +56,10 @@ class GradeController {
                 return;
             }
 
-            const data = await Grade.getClassGrade(courseId);
             const course = await Course.findOne({ where: { id: courseId }, raw: true });
-
+            
             if (course.gradeStructure) {
+                const data = await Grade.getClassGrade(courseId);
                 const gradeStructure = JSON.parse(JSON.parse(course.gradeStructure).gradeStructure);
 
                 var currIndex = -1;
@@ -79,8 +79,10 @@ class GradeController {
                 returnData = addRemainingGrastrutureElement(returnData, gradeStructure, currIndex);
 
                 res.status(200).send(returnData);
-            } else
-                res.status(200).send([]);
+            } else {
+                const data = await Grade.getGradeByCourseId(courseId);
+                res.status(200).send(data);
+            }
         } catch (error) {
             console.log(error);
             res.status(500).send({
@@ -183,37 +185,37 @@ const updateGradeItem = async (gradeId, courseId, other) => {
         },
         raw: true
     });
-    const gradeStructure = JSON.parse(JSON.parse(course.gradeStructure).gradeStructure);
+    if (course.gradeStructure) {
+        const gradeStructure = JSON.parse(JSON.parse(course.gradeStructure).gradeStructure);
+        gradeStructure.forEach(async (element) => {
+            const gradeStructureId = element.id;
+            const gradeStructureTitle = element.title;
 
-    gradeStructure.forEach(async (element) => {
-        const gradeStructureId = element.id;
-        const gradeStructureTitle = element.title;
+            const newGradeItem = {
+                gradeId: gradeId,
+                score: other[`${gradeStructureId}`].score ? other[`${gradeStructureId}`].score : -1,
+                isFinal: other[`${gradeStructureId}`].isFinal,
+                gradeStructureId: gradeStructureId,
+                title: gradeStructureTitle
+            };
 
-        const newGradeItem = {
-            gradeId: gradeId,
-            score: other[`${gradeStructureId}`].score ? other[`${gradeStructureId}`].score : -1,
-            isFinal: other[`${gradeStructureId}`].isFinal,
-            gradeStructureId: gradeStructureId,
-            title: gradeStructureTitle
-        };
+            const isExited = await checkIfExistedStudentGradeItem(gradeId, gradeStructureId);
 
-        const isExited = await checkIfExistedStudentGradeItem(gradeId, gradeStructureId);
-
-        if (isExited) {
-            await GradeItem.update(newGradeItem, {
-                where: {
-                    gradeId: gradeId,
-                    gradeStructureId: gradeStructureId,
-                },
-                returning: true,
-                plain: true,
-            });
-        }
-        else {
-            await GradeItem.create(newGradeItem, { raw: true });
-        }
-
-    })
+            if (isExited) {
+                await GradeItem.update(newGradeItem, {
+                    where: {
+                        gradeId: gradeId,
+                        gradeStructureId: gradeStructureId,
+                    },
+                    returning: true,
+                    plain: true,
+                });
+            }
+            else {
+                await GradeItem.create(newGradeItem, { raw: true });
+            }
+        })
+    }
 }
 
 const checkIfTeacherOfClass = async (userId, courseId) => {

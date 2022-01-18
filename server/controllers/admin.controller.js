@@ -226,7 +226,7 @@ class AdminController {
                 paranoid: false,
             })
             if (!users) {
-                res.status(200).send({ messsage: 'User does not exist' })
+                res.status(200).send({ message: 'User does not exist' })
                 return
             }
             for(let i = 0; i< users.length; ++i) {
