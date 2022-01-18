@@ -167,7 +167,7 @@ class GradereviewController {
             // Create Notification
             req.body.gradeItemId = gradeReview.gradeItemId
             const userCourse = await UsersCourses.findOne({
-                studentId: req.user.id,
+                where: { studentId: req.user.id, courseId: req.body.courseId },
             })
             const isTeacher = await checkIfTeacherOfClass(
                 req.user.id,
