@@ -77,7 +77,10 @@ class NotificationController {
     static createFinalizedNotifications = async (req, res) => {
         try {
             const { title, courseId } = req.body
-            const course = await Course.findOne({ id: courseId })
+            const course = await Course.findOne({
+                where: { id: courseId },
+                raw: true,
+            })
             const userSend = await User.findOne({
                 where: { id: req.user.id },
                 raw: true,

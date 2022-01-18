@@ -11,9 +11,9 @@ class GradereviewController {
             const { gradeItemId, studentId, courseId } = req.body
             const gradeReview = await GradeReview.findOne({
                 where: {
-                    gradeItemId,
-                    studentId,
-                    courseId,
+                    gradeItemId: gradeItemId,
+                    studentId: studentId,
+                    courseId: courseId,
                     status: 'pending',
                 },
                 raw: true,

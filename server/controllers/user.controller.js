@@ -140,12 +140,13 @@ class UserController {
 
     static getUserDetail = async (req, res) => {
         try {
+            console.log(req.user, '````````````````````````````````')
             const user = await User.findOne({
                 where: { mail: req.user.email },
-                raw:true
+                raw: true,
             })
-            const { password, ...rest } = user;
-            res.send({...rest,isSocial: !password})
+            const { password, ...rest } = user
+            res.send({ ...rest, isSocial: !password })
         } catch (error) {
             console.log(error)
             res.status(500).send({ message: 'Server Error!' })
@@ -157,15 +158,14 @@ class UserController {
             var users = await User.getUsersInClass(req.body.courseId)
             const filter = req.body.filter
             //filter by role and exclude distinct cloumn
-            if(filter)
-            users = users.reduce(
-                (filtered, { row, ...newUser }) =>
-                    newUser.role === filter
-                        ? filtered.push(newUser) && filtered
-                        : filtered,
-                []
-            )
-        
+            if (filter)
+                users = users.reduce(
+                    (filtered, { row, ...newUser }) =>
+                        newUser.role === filter
+                            ? filtered.push(newUser) && filtered
+                            : filtered,
+                    []
+                )
 
             res.send({ users: users })
         } catch (error) {
@@ -188,31 +188,30 @@ class UserController {
                 return
             }
 
-            const studentId = req.body.studentId;
+            const studentId = req.body.studentId
             const studentIds = await User.findOne({
                 where: {
                     [Op.or]: [
                         { studentId: studentId },
-                        { unMappedStudentId: studentId }
-                    ]
+                        { unMappedStudentId: studentId },
+                    ],
                 },
                 attributes: ['id'],
-            });
-
+            })
 
             if (studentIds.dataValues) {
                 res.status(200).send({
                     message: 'This student id is already taken',
                 })
-                return;
+                return
             }
 
             var newObj = {
-                studentId: studentId
-            };
-            if(!user.studentId && user.unMappedStudentId) {
+                studentId: studentId,
+            }
+            if (!user.studentId && user.unMappedStudentId) {
                 newObj = {
-                    unMappedStudentId: studentId
+                    unMappedStudentId: studentId,
                 }
             }
 
@@ -247,7 +246,7 @@ class UserController {
                 plain: true, // <<<< To return object itself, not return other messy data
             })
             if (user && user[1]) {
-                const { password, ...rest } = user[1].dataValues;
+                const { password, ...rest } = user[1].dataValues
                 res.send(rest) //<<< to get actual object
             } else {
                 res.status(404).send({
@@ -262,4 +261,4 @@ class UserController {
     }
 }
 
-export default UserController;
+export default UserController

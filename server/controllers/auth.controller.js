@@ -1,13 +1,13 @@
 import jwt from 'jsonwebtoken'
 import { verifyFb, verifyGg } from '../helpers/auth'
 import User from '../models/user.model'
-import {sendRewPassword} from '../utils/emailer.util'
+import { sendRewPassword } from '../utils/emailer.util'
 
 class AuthController {
     static register = async (req, res) => {
         res.status(200).json({
             message: 'Signup successful',
-            result: 1
+            result: 1,
         })
     }
 
@@ -38,17 +38,17 @@ class AuthController {
             if (data?.email === req.body.mail) {
                 var user = await User.findOne({
                     where: { mail: req.body.mail },
-                    paranoid: false
+                    paranoid: false,
                 })
 
                 if (!user) {
-                    user = this.createSocialAccount(
+                    user = await this.createSocialAccount(
                         req.body.name,
                         req.body.mail
                     )
                 } else if (user.deletedAt) {
-                    res.status(200).send({ message: 'This account is banned' });
-                    return;
+                    res.status(200).send({ message: 'This account is banned' })
+                    return
                 }
 
                 req.user = user
@@ -76,8 +76,8 @@ class AuthController {
         }
 
         // Save User in the database
-        const newRecord = await User.create(newUser);
-        return newRecord;
+        const newRecord = await User.create(newUser)
+        return newRecord
     }
 
     static logout = async (req, res) => {
@@ -89,27 +89,32 @@ class AuthController {
 
     static renewPassword = async (req, res) => {
         try {
-            const mail = req.body.mail;
+            const mail = req.body.mail
 
-            var user = await User.findOne({ where: { mail: mail }, paranoid: false })
+            var user = await User.findOne({
+                where: { mail: mail },
+                paranoid: false,
+            })
             if (!user) {
                 res.status(200).send({
-                    message:
-                        `Email didn't exist`,
+                    message: `Email didn't exist`,
                 })
-                return;
-            } 
+                return
+            }
 
             if (user?.deletedAt) {
-                res.status(200).send({ message: 'This email is banned' });
-                return;
+                res.status(200).send({ message: 'This email is banned' })
+                return
             }
-            const newPassword = Math.random().toString(36).slice(-8);
+            const newPassword = Math.random().toString(36).slice(-8)
 
-            const hasedPass = await User.generateHash(newPassword);
-            await User.update({password:hasedPass},{ where: { mail: mail }});
-            sendRewPassword(req,res,user.name,newPassword);
-            res.status(200).send({message: "reset password successfully"});
+            const hasedPass = await User.generateHash(newPassword)
+            await User.update(
+                { password: hasedPass },
+                { where: { mail: mail } }
+            )
+            sendRewPassword(req, res, user.name, newPassword)
+            res.status(200).send({ message: 'reset password successfully' })
         } catch (error) {
             console.log(error)
             res.status(500).send({
@@ -120,36 +125,38 @@ class AuthController {
 
     static changePassword = async (req, res) => {
         try {
-            const mail = req.user.email;
+            const mail = req.user.email
 
             var user = await User.findOne({ where: { mail }, paranoid: false })
             if (!user) {
                 res.status(200).send({
-                    message:
-                        `Email didn't exist`,
+                    message: `Email didn't exist`,
                 })
-                return;
-            } 
-
-            if (user?.deletedAt) {
-                res.status(200).send({ message: 'This email is banned' });
-                return;
+                return
             }
 
-            const {password, newPassword} = req.body;
+            if (user?.deletedAt) {
+                res.status(200).send({ message: 'This email is banned' })
+                return
+            }
+
+            const { password, newPassword } = req.body
             const isValidate = await User.isValidPassword(
                 password,
                 user.password
             )
             if (!isValidate) {
-                res.status(200).send({message: "wrong password"});
-                return;
+                res.status(200).send({ message: 'wrong password' })
+                return
             }
 
-            const hasedPass = await User.generateHash(newPassword);
-            await User.update({password:hasedPass},{ where: { mail: mail }});
+            const hasedPass = await User.generateHash(newPassword)
+            await User.update(
+                { password: hasedPass },
+                { where: { mail: mail } }
+            )
 
-            res.status(200).send({message: "change password successfully"});
+            res.status(200).send({ message: 'change password successfully' })
         } catch (error) {
             console.log(error)
             res.status(500).send({
@@ -159,4 +166,4 @@ class AuthController {
     }
 }
 
-export default AuthController;
+export default AuthController
