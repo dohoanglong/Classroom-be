@@ -197,7 +197,7 @@ const updateGradeItem = async (gradeId, courseId, other) => {
             const newGradeItem = {
                 gradeId: gradeId,
                 score: other[`${gradeStructureId}`]?.score ? other[`${gradeStructureId}`]?.score : -1,
-                isFinal: other[`${gradeStructureId}`]?.isFinal? other[`${gradeStructureId}`]?.score : 0,
+                isFinal: other[`${gradeStructureId}`]?.isFinal!==undefined ? other[`${gradeStructureId}`]?.isFinal : 0,
                 gradeStructureId: gradeStructureId,
                 title: gradeStructureTitle
             };
