@@ -53,7 +53,7 @@ Grade.getClassGrade = async (courseId) => {
        grade_item.score,
        grade_item.is_final
     FROM grade_item
-       JOIN grade
+        RIGHT JOIN grade
          ON grade.id = grade_item.grade_id
        LEFT JOIN account
          ON account.student_id = grade.student_id

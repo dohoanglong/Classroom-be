@@ -61,7 +61,10 @@ class GradeController {
             if (course.gradeStructure) {
                 const data = await Grade.getClassGrade(courseId);
                 const gradeStructure = JSON.parse(JSON.parse(course.gradeStructure).gradeStructure);
-
+                if(data.some(e=>e.gradeStructureId===null)) {
+                    res.status(200).send(data);
+                    return;
+                }
                 var currIndex = -1;
                 var returnData = [];
                 data.forEach((curr) => {
@@ -193,8 +196,8 @@ const updateGradeItem = async (gradeId, courseId, other) => {
 
             const newGradeItem = {
                 gradeId: gradeId,
-                score: other[`${gradeStructureId}`].score ? other[`${gradeStructureId}`].score : -1,
-                isFinal: other[`${gradeStructureId}`].isFinal,
+                score: other[`${gradeStructureId}`]?.score ? other[`${gradeStructureId}`]?.score : -1,
+                isFinal: other[`${gradeStructureId}`]?.isFinal? other[`${gradeStructureId}`]?.score : 0,
                 gradeStructureId: gradeStructureId,
                 title: gradeStructureTitle
             };
