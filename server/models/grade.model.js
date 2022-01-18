@@ -68,6 +68,25 @@ Grade.getClassGrade = async (courseId) => {
     })
 }
 
+Grade.getGradeByCourseId = async (courseId)=> {
+    const selectQuery = `
+    select
+    grade.id,
+    grade.student_id,
+    grade.student_name
+from
+    grade
+where
+    grade.course_id = ?`
+
+    return sequelize.query(selectQuery, {
+        replacements: [courseId],
+        model: GradeItem,
+        mapToModel: true,
+        raw: true,
+    })
+}
+
 Grade.getStudentGrade = async (studentId,courseId)=> {
     const selectQuery = `
     select
